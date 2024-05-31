@@ -1,11 +1,9 @@
 import {HydratedDocument} from "mongoose";
 import {Prop, Schema, SchemaFactory} from "@nestjs/mongoose";
-
-
-export type BlogDocument = HydratedDocument<Blog>
+import {BlogCreateDto} from "../api/models/input/blog.input.model";
 
 @Schema()
-export class Blog {
+export class Blog{
     @Prop()
     name: string
 
@@ -21,14 +19,32 @@ export class Blog {
     @Prop()
     isMembership: boolean
 
-
-    /*updateBlog(dto: UpdateBlogDto, userID: string) {
-        if(userID !== this.authorId) {
-            throw new DomainError()
+    constructor(data:BlogCreateDto) {
+        this.name=data.name
+        this.description=data.description
+        this.websiteUrl=data.websiteUrl
+        this.createdAt=new Date().toISOString()
+        this.isMembership=true
+    }
+    // Метод для обновления данных блога
+    updateBlog(updatedData: Partial<Blog>): void {
+        if (updatedData.name) {
+            this.name = updatedData.name;
+        }
+        if (updatedData.description) {
+            this.description = updatedData.description;
+        }
+        if (updatedData.websiteUrl) {
+            this.websiteUrl = updatedData.websiteUrl;
+        }
+        if (updatedData.isMembership !== undefined) {
+            this.isMembership = updatedData.isMembership;
         }
 
-        this.name = dto.name
-    }*/
+        //await this.save()- Пасхалко от Влада(Save Record Pattern), extends Document надо юзать при классе
+    }
 }
 
 export const BlogSchema = SchemaFactory.createForClass(Blog)
+BlogSchema.loadClass(Blog)
+export type BlogDocument = HydratedDocument<Blog>
