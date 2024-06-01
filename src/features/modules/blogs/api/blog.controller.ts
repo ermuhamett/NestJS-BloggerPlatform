@@ -88,8 +88,13 @@ export class BlogController {
     }
 
     @Get(':blogId/posts')
-    async getPostsForBlog() {
-
+    async getPostsForBlog(@Param('blogId') blogId:string, @Query() query:QueryInputType) {
+        const blog=await this.blogRepository.find(blogId)
+        if(!blog){
+            throw new HttpException('Blog not found', HttpStatus.NOT_FOUND)
+        }
+        const sanitizedQuery=new QueryParams(query).sanitize()
+        return await this.postQueryRepository.getPostsWithPaging(sanitizedQuery,blogId)
     }
 
     @Delete(':id')

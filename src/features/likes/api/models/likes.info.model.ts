@@ -12,6 +12,14 @@ export class NewestLike {
     ) {}
 }
 
+export class LikesInfo{
+    constructor(
+        public likesCount: number,
+        public dislikesCount: number,
+        public myStatus: LikeStatus, // Используем новый тип
+    ) {}
+}
+
 export class ExtendedLikesInfo {
     constructor(
         public likesCount: number,

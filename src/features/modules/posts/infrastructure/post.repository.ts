@@ -12,4 +12,17 @@ export class PostRepository {
         const result:PostDocument=await this.postModel.create(post)
         return result.id
     }
+
+    async find(postId:string):Promise<PostDocument>{
+        return this.postModel.findById(postId).exec()
+    }
+
+    async deletePostById(postId:string){
+        try {
+            const result=await this.postModel.findOneAndDelete({_id:postId})
+            return result.$isDeleted()
+        }catch (error) {
+            throw new Error(`Failed to delete blog with error ${error}`)
+        }
+    }
 }

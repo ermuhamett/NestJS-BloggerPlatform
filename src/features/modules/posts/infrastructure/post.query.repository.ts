@@ -5,6 +5,7 @@ import {Post, PostDocument} from "../domain/post.entity";
 import {NewestLikesMapper, PostMapper, PostOutputDto} from "../api/models/output/post.output.model";
 import {ExtendedLikesInfo, LikeStatus} from "../../../likes/api/models/likes.info.model";
 import {PostLikes, PostLikesDocument} from "../../../likes/domain/like.entity";
+import {QueryOutputType} from "../../../../base/adapters/query/query.class";
 
 
 @Injectable()
@@ -57,6 +58,39 @@ export class PostQueryRepository {
         } catch (error) {
             console.error(`Error while getting likes for postId ${postId}: `, error);
             throw error;
+        }
+    }
+
+    async getPostsWithPaging(query: QueryOutputType, blogId?: string, userId?: string) {
+        const byId = blogId ? {blogId: blogId} : {}
+        const totalCount = await this.postModel.countDocuments(byId)
+        const pageCount = Math.ceil(totalCount / query.pageSize)
+        try {
+            const posts: PostDocument[] = await this.postModel
+                .find(byId)
+                .sort({[query.sortBy]: query.sortDirection})
+                .skip((query.pageNumber - 1) * query.pageSize)
+                .limit(query.pageSize)
+            // Создает массив строковых идентификаторов постов.
+            const postIds = posts.map(post => post.id.toString())
+            // Запрашивает информацию о лайках для каждого поста параллельно, используя Promise.all.
+            const extendedLikesInfos = await Promise.all(postIds.map(postId => this.getPostLikes(postId, userId)))
+            // Создает массив объектов, содержащих посты и соответствующую информацию о лайках.
+            const extendedLikesList = posts.map((post, index) => ({
+                post,
+                extendedLikesInfo: extendedLikesInfos[index]
+            }))
+            return{
+                pageCount:pageCount,
+                page:query.pageNumber,
+                pageSize:query.pageSize,
+                totalCount:totalCount,
+                items:extendedLikesList.map(item=>PostMapper.toView(item.post, item.extendedLikesInfo))
+            }
+        }
+        catch (e) {
+            console.log({get_post_repo:e})
+            return false
         }
     }
 }
