@@ -1,15 +1,28 @@
-import { Injectable } from '@nestjs/common';
+import {BadGatewayException, Injectable, InternalServerErrorException} from '@nestjs/common';
 import { UserRepository } from '../infrastructure/user.repository';
+import {UserCreateDto} from "../api/models/input/create-user.input.model";
+import {User} from "../domain/user.entity";
+import {BcryptService} from "../../../base/adapters/auth/bcrypt.service";
 
 // Для провайдера всегда необходимо применять декоратор @Injectable() и регистрировать в модуле
 @Injectable()
 export class UsersService {
-  constructor(private usersRepository: UserRepository) {}
+  constructor(private usersRepository: UserRepository,
+              private readonly bcryptService: BcryptService,) {}
 
-  async create(email: string, name: string) {
+  async create(userDto:UserCreateDto) {
     // email send message
     // this.emailAdapter.send(message);
-
-    return 'id';
+    //const {login, email, password}=userDto
+    const passwordHash=await this.bcryptService.generateHash(userDto.password)
+    const user=new User(userDto,passwordHash)
+    const newUserId=await this.usersRepository.insertUser(user)
+    if(!newUserId){
+      throw new InternalServerErrorException('User cant created')
+    }
+    return newUserId
+  }
+  async deleteUserById(userId:string){
+    return await this.usersRepository.deleteUserById(userId)
   }
 }

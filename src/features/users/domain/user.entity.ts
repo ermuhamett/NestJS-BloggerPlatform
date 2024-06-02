@@ -1,29 +1,41 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
-import { randomUUID } from 'crypto';
+import {Prop, Schema, SchemaFactory} from '@nestjs/mongoose';
+import {HydratedDocument} from 'mongoose';
+import {randomUUID} from 'crypto';
+import {UserCreateDto} from "../api/models/input/create-user.input.model";
 
-export type UserDocument = HydratedDocument<User>;
 
 @Schema()
 export class User {
-  @Prop()
-  name: string;
+    @Prop()
+    login: string;
 
-  @Prop()
-  email: string;
+    @Prop()
+    email: string;
 
-  @Prop()
-  createdAt: Date;
+    @Prop()
+    passwordHash: string;
 
-  //TODO: replace with new this()
-  /*static create(name: string, email: string | null ) {
-    const user = new this();
+    @Prop()
+    createdAt: string;
 
-    user.name = name;
-    user.email = email ?? `${randomUUID()}_${name}@it-incubator.io`;
+    constructor(data: UserCreateDto, passwordHash: string) {
+        this.login = data.login
+        this.email = data.email
+        this.passwordHash = passwordHash
+        this.createdAt = new Date().toISOString()
+    }
 
-    return user;
-  }*/
+    //TODO: replace with new this()
+    /*static create(name: string, email: string | null ) {
+      const user = new this();
+
+      user.name = name;
+      user.email = email ?? `${randomUUID()}_${name}@it-incubator.io`;
+
+      return user;
+    }*/
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
+UserSchema.loadClass(User)
+export type UserDocument = HydratedDocument<User>;

@@ -6,25 +6,19 @@ import {
 } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { appSettings } from './settings/app-settings';
-import { UserRepository } from './features/users/infrastructure/user.repository';
-import { UsersService } from './features/users/application/users.service';
-import { UserQueryRepository } from './features/users/infrastructure/user.query.repository';
 import { LoggerMiddleware } from './common/middlewares/logger.middleware';
 import {BlogsModule} from "./features/modules/blogs.module";
 import {TestingModule} from "./features/testing/api/testing.module";
+import {UserModule} from "./features/users/api/user.module";
 
-const usersProviders: Provider[] = [
-  UserRepository,
-  UsersService,
-  UserQueryRepository,
-];
 
 @Module({
   // Регистрация модулей
   imports: [
     MongooseModule.forRoot(appSettings.api.MONGO_CONNECTION_URI),
     BlogsModule,
-    TestingModule
+    TestingModule,
+    UserModule
    // MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
   ],
   // Регистрация провайдеров

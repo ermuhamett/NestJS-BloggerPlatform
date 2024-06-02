@@ -26,6 +26,7 @@ export class Post {
         this.title = data.title
         this.shortDescription = data.shortDescription
         this.content = data.content
+        this.blogId = data.blogId
         this.blogName = blogName
         this.createdAt = new Date().toISOString()
     }

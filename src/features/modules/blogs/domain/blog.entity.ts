@@ -24,7 +24,7 @@ export class Blog{
         this.description=data.description
         this.websiteUrl=data.websiteUrl
         this.createdAt=new Date().toISOString()
-        this.isMembership=true
+        this.isMembership=false
     }
     // Метод для обновления данных блога
     updateBlog(updatedData: Partial<Blog>): void {

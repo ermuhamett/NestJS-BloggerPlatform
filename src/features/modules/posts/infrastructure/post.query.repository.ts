@@ -81,7 +81,7 @@ export class PostQueryRepository {
                 extendedLikesInfo: extendedLikesInfos[index]
             }))
             return{
-                pageCount:pageCount,
+                pagesCount:pageCount,
                 page:query.pageNumber,
                 pageSize:query.pageSize,
                 totalCount:totalCount,
