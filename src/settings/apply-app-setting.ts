@@ -9,6 +9,11 @@ import { appSettings } from './app-settings';
 import { LoggerMiddlewareFunc } from '../common/middlewares/logger.middleware';
 import {LoggingInterceptor} from "../common/interceptors/logging.interceptor";
 
+interface CustomError {
+  field: string;
+  message: string;
+}
+
 // Префикс нашего приложения (http://site.com/api)
 const APP_PREFIX = '/api';
 
@@ -62,6 +67,7 @@ const setSwagger = (app: INestApplication) => {
 
 const setAppPipes = (app: INestApplication) => {
   app.useGlobalPipes(
+      //для правильного отображения ошибок, настраиваем useGlobalPipes
     new ValidationPipe({
       // Для работы трансформации входящих данных
       transform: true,
@@ -69,15 +75,19 @@ const setAppPipes = (app: INestApplication) => {
       stopAtFirstError: true,
       // Перехватываем ошибку, кастомизируем её и выкидываем 400 с собранными данными
       exceptionFactory: (errors) => {
-        const customErrors = [];
+        const customErrors:CustomError[] = [];
 
         errors.forEach((e) => {
-          const constraintKeys = Object.keys(e.constraints);
+          //Происходит перебор каждой ошибки e в исходном массиве,
+          //достаём данные из errors.constraints и преобразуем в массив
+          const constraintKeys = Object.keys(e.constraints);//Для каждой ошибки извлекается объект constraints, и его ключи преобразуются в массив строк constraintKeys.
 
           constraintKeys.forEach((cKey) => {
-            const msg = e.constraints[cKey];
-
-            customErrors.push({ key: e.property, message: msg });
+            // Каждый ключ cKey из массива constraintKeys перебирается внутри вложенного цикла.
+            const msg = e.constraints[cKey];//Сохраняется сообщение об ошибке для конкретного ключа cKey из constraints.
+            // Для каждого ключа cKey создается новый объект с полями field (свойство property из исходной ошибки) и message (сообщение об ошибке из constraints),
+            // который затем добавляется в массив customErrors.
+            customErrors.push({ field: e.property, message: msg });
           });
         });
 
