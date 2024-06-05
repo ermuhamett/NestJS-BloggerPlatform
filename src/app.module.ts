@@ -9,16 +9,21 @@ import { LoggerMiddleware } from './common/middlewares/logger.middleware';
 import {BlogsModule} from "./features/modules/blogs.module";
 import {TestingModule} from "./features/testing/api/testing.module";
 import {UserModule} from "./features/users/api/user.module";
+import {AuthModule} from "./features/auth/api/auth.module";
+import {ConfigModule} from "@nestjs/config";
+import {JwtModule} from "@nestjs/jwt";
 
 
 @Module({
   // Регистрация модулей
   imports: [
     MongooseModule.forRoot(appSettings.api.MONGO_CONNECTION_URI),
+    ConfigModule.forRoot({isGlobal:true}),
+    JwtModule.register({}),
     BlogsModule,
     TestingModule,
-    UserModule
-   // MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    UserModule,
+    AuthModule
   ],
   // Регистрация провайдеров
   providers: [

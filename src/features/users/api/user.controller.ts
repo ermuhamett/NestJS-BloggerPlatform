@@ -7,7 +7,7 @@ import {
     HttpCode, HttpException, HttpStatus,
     Param,
     Post,
-    Query,
+    Query, UseGuards,
 } from '@nestjs/common';
 import {UserQueryRepository} from '../infrastructure/user.query.repository';
 import {UsersService} from '../application/users.service';
@@ -15,6 +15,7 @@ import {UserCreateDto} from "./models/input/create-user.input.model";
 import {UserOutputDto} from "./models/output/user.output.model";
 import {QueryInputType, QueryParams} from "../../../base/adapters/query/query.class";
 import {UserRepository} from "../infrastructure/user.repository";
+import {AuthGuard} from "@nestjs/passport";
 
 // Tag для swagger
 @ApiTags('Users')
@@ -51,6 +52,7 @@ export class UserController {
         return await this.usersQueryRepository.getUsersWithPaging(sanitizedQuery)
     }
 
+    @UseGuards(AuthGuard('basic'))
     @Post()
     // Для переопределения default статус кода https://docs.nestjs.com/controllers#status-code
     @HttpCode(HttpStatus.CREATED)
@@ -62,6 +64,7 @@ export class UserController {
         return await this.usersQueryRepository.getUserById(userId.toString());
     }
 
+    @UseGuards(AuthGuard('basic'))
     @Delete(':id')
     @HttpCode(HttpStatus.NO_CONTENT)
     async deleteUserById(@Param('id') id: string) {

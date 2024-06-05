@@ -1,13 +1,22 @@
-import { IsString, Length } from 'class-validator';
-import { Trim } from '../../../../../common/decorators/transform/trim';
-import { IsOptionalEmail } from '../../../../../common/decorators/validate/is-optional-email';
+import {Matches} from 'class-validator';
+import {
+  IsOptionalEmail,
+  IsStringLength
+} from '../../../../../common/decorators/validate/is-optional-email';
+import {IsUnique} from "../../../../../common/decorators/validate/uniqueInDatabase";
 
 export class UserCreateDto {
-  //@Trim()
-  //@IsString()
-  //@Length(5, 20, { message: 'Length not correct' })
+  @IsStringLength(3,10)
+  @Matches('^[a-zA-Z0-9_-]*$')
+  @IsUnique('login')
   login: string;
+
+
+  @IsStringLength(6,20)
   password:string
-  //@IsOptionalEmail()
+
+  @IsOptionalEmail()
+  @Matches('^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$')
+  @IsUnique('email')
   email: string;
 }
