@@ -47,13 +47,26 @@ class APISettings {
 
   // Database
   public readonly MONGO_CONNECTION_URI: string;
+  // SMTP
+  public readonly SMTP_USER: string;
+  public readonly SMTP_PASSWORD: string;
 
+  //JWT
+  JWT_ACCESS_TOKEN_SECRET:string
+  JWT_EXPIRY:string
+  REFRESH_TOKEN_EXPIRY:string
   constructor(private readonly envVariables: EnvironmentVariable) {
     // Application
     this.APP_PORT = this.getNumberOrDefault(envVariables.APP_PORT, 7840);
-
     // Database
     this.MONGO_CONNECTION_URI = envVariables.MONGO_CONNECTION_URI ?? 'mongodb://localhost/nest';
+    // SMTP
+    this.SMTP_USER = envVariables.SMTP_USER ?? '';
+    this.SMTP_PASSWORD = envVariables.SMTP_PASSWORD ?? '';
+    //JWT
+    this.JWT_ACCESS_TOKEN_SECRET=envVariables.JWT_ACCESS_TOKEN_SECRET ?? '';
+    this.JWT_EXPIRY=envVariables.JWT_EXPIRY ?? '';
+    this.REFRESH_TOKEN_EXPIRY=envVariables.REFRESH_TOKEN_EXPIRY ?? '';
   }
 
   private getNumberOrDefault(value: string, defaultValue: number): number {

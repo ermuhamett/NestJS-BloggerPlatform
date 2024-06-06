@@ -8,6 +8,7 @@ import { HttpExceptionFilter } from '../common/exception-filters/http-exception-
 import { appSettings } from './app-settings';
 import { LoggerMiddlewareFunc } from '../common/middlewares/logger.middleware';
 import {LoggingInterceptor} from "../common/interceptors/logging.interceptor";
+import cookieParser from "cookie-parser";
 
 interface CustomError {
   field: string;
@@ -27,7 +28,7 @@ export const applyAppSettings = (app: INestApplication) => {
 
   // Применить middleware глобально
   app.use(LoggerMiddlewareFunc);
-
+  app.use(cookieParser())
   // Установка префикса
   setAppPrefix(app);
 

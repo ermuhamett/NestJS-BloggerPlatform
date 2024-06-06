@@ -6,7 +6,7 @@ import { Trim } from '../transform/trim';
 // https://docs.nestjs.com/custom-decorators#decorator-composition
 
 export const IsOptionalEmail = () => {
-    return applyDecorators(IsEmail(), Trim(), IsOptional());
+    return applyDecorators(Trim(), IsString(), IsNotEmpty(), IsEmail());
 }
 
 export const IsOptionalString=()=>{

@@ -1,5 +1,5 @@
 import {Injectable} from "@nestjs/common";
-import { JwtService as NestJwtService, JwtSignOptions } from '@nestjs/jwt';
+import { JwtService as NestJwtService} from '@nestjs/jwt';
 import {ConfigService} from "@nestjs/config";
 
 @Injectable()
@@ -7,15 +7,13 @@ export class JwtService{
     private readonly secretKey: string;
     private readonly jwtExpiry: string;
     private readonly refreshTokenExpiry: string;
-
     constructor(private readonly configService:ConfigService,
                 private readonly jwtService:NestJwtService) {
         this.secretKey = this.configService.get<string>('JWT_ACCESS_TOKEN_SECRET');
         this.jwtExpiry = this.configService.get<string>('JWT_EXPIRY');
         this.refreshTokenExpiry = this.configService.get<string>('REFRESH_TOKEN_EXPIRY');
     }
-
-    async createJwtToken(userId:string){
+    /*async createJwtToken(userId:string){
         const payload={userId};
         const options:JwtSignOptions={expiresIn:this.jwtExpiry};
         return this.jwtService.signAsync(payload, {secret:this.secretKey, ...options})
@@ -29,6 +27,16 @@ export class JwtService{
         const accessToken = await this.createJwtToken(userId);
         const refreshToken = await this.createRefreshToken(userId);
         return { accessToken, refreshToken };
+    }*/
+    async createPairToken(userId: string) {
+        const payload = { sub: userId };
+        const accessToken = this.jwtService.sign(payload, {
+            expiresIn: this.jwtExpiry, // Срок действия access token
+        });
+        const refreshToken = this.jwtService.sign(payload, {
+            expiresIn: this.refreshTokenExpiry, // Срок действия refresh token
+        });
+        return { accessToken, refreshToken };
     }
     async decodeToken(token:string){
         try {
@@ -38,7 +46,6 @@ export class JwtService{
             return null;
         }
     }
-
     async verifyToken(token:string){
         try {
             return await this.jwtService.verifyAsync(token, { secret: this.secretKey });

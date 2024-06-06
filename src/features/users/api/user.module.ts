@@ -6,6 +6,7 @@ import {UsersService} from "../application/users.service";
 import {UserRepository} from "../infrastructure/user.repository";
 import {UserQueryRepository} from "../infrastructure/user.query.repository";
 import {UserController} from "./user.controller";
+import {BasicStrategy} from "../../../common/strategies/basic.strategy";
 
 
 @Module({
@@ -13,9 +14,10 @@ import {UserController} from "./user.controller";
         MongooseModule.forFeature([{name:User.name, schema:UserSchema}]),
         BcryptModule
     ],
-    providers:[UsersService, UserRepository, UserQueryRepository],
+    providers:[BasicStrategy, UsersService, UserRepository, UserQueryRepository],
     controllers:[UserController],
-    exports:[UsersService],
+    exports:[UsersService, UserRepository, UserQueryRepository]
+    //когда будем импортировать модули будут работать только те провайдеры которые мы экспортировали
 })
 
 export class UserModule{}

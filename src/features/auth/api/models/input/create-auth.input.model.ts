@@ -3,30 +3,40 @@ import {
     IsOptionalString,
     IsStringLength
 } from "../../../../../common/decorators/validate/is-optional-email";
+import {Matches} from "class-validator";
+import {IsUnique} from "../../../../../common/decorators/validate/uniqueInDatabase";
 
 
-export class LoginInputDto{
+export class LoginInputDto {
     @IsOptionalString() //custom декораторы
-    loginOrEmail:string;
+    loginOrEmail: string;
 
     @IsOptionalString()
-    password:string;
+    password: string;
 }
 
-export class PasswordRecoveryDto{
+export class PasswordRecoveryDto {
     @IsOptionalEmail()
-    email:string
+    @Matches('^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$')
+    email: string
 }
 
-export class NewPasswordDto{
-    @IsStringLength(6,20)
-    newPassword:string
-
-    @IsOptionalString()
-    recoveryCode:string
+export class RegistrationEmailResendingDto {
+    @IsOptionalEmail()
+    @Matches('^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$')
+    @IsUnique('email')
+    email: string;
 }
 
-export class ConfirmationCodeDto{
+export class NewPasswordDto {
+    @IsStringLength(6, 20)
+    newPassword: string
+
     @IsOptionalString()
-    code:string
+    recoveryCode: string
+}
+
+export class ConfirmationCodeDto {
+    @IsOptionalString()
+    code: string
 }

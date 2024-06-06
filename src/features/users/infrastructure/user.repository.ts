@@ -5,8 +5,7 @@ import {User, UserDocument} from "../domain/user.entity";
 
 @Injectable()
 export class UserRepository {
-    constructor(@InjectModel(User.name) private userModel: Model<User>) {
-    }
+    constructor(@InjectModel('User') private userModel: Model<UserDocument>) {}
 
     async insertUser(user: Partial<User>) {
         const result: UserDocument = await this.userModel.create(user);
@@ -17,7 +16,13 @@ export class UserRepository {
         return this.userModel.findById(userId).exec();
     }
 
-    async findByLoginOrEmail(loginOrEmail: string) {
+    async findUserByConfirmationCode(confirmationCode:string):Promise<UserDocument>{
+        return await this.userModel.findOne({"emailConfirmation.confirmationCode": confirmationCode}).exec();
+    }
+    async findUserByRecoveryCode(recoveryCode:string):Promise<UserDocument>{
+        return await this.userModel.findOne({"emailConfirmation.passwordRecoveryCode":recoveryCode}).exec();
+    }
+    async findByLoginOrEmail(loginOrEmail: string):Promise<UserDocument> {
         try {
             return await this.userModel.findOne({$or: [{email: loginOrEmail}, {login: loginOrEmail}]})
         } catch (e) {
@@ -25,6 +30,8 @@ export class UserRepository {
             return null;
         }
     }
+
+    //async updateConfirmation(){}
 
     async deleteUserById(userId: string) {
         try {

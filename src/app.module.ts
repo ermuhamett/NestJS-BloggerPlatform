@@ -12,6 +12,8 @@ import {UserModule} from "./features/users/api/user.module";
 import {AuthModule} from "./features/auth/api/auth.module";
 import {ConfigModule} from "@nestjs/config";
 import {JwtModule} from "@nestjs/jwt";
+import {IsUniqueConstraint} from "./common/decorators/validate/uniqueInDatabase";
+import {ThrottlerModule} from "@nestjs/throttler";
 
 
 @Module({
@@ -19,7 +21,10 @@ import {JwtModule} from "@nestjs/jwt";
   imports: [
     MongooseModule.forRoot(appSettings.api.MONGO_CONNECTION_URI),
     ConfigModule.forRoot({isGlobal:true}),
-    JwtModule.register({}),
+    ThrottlerModule.forRoot([{
+      ttl:10000, // Время в миллисекундах, за которое считается количество запросов
+      limit:5 // Максимальное количество запросов за указанный период времени
+    }]),
     BlogsModule,
     TestingModule,
     UserModule,
@@ -27,6 +32,7 @@ import {JwtModule} from "@nestjs/jwt";
   ],
   // Регистрация провайдеров
   providers: [
+    IsUniqueConstraint
     //...usersProviders,
     /* {
             provide: UsersService,
@@ -48,6 +54,7 @@ import {JwtModule} from "@nestjs/jwt";
   ],
   // Регистрация контроллеров
   //controllers: [UserController],
+  //exports:[IsUniqueConstraint]
 })
 export class AppModule implements NestModule {
   // https://docs.nestjs.com/middleware#applying-middleware

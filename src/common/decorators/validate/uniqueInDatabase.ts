@@ -1,4 +1,4 @@
-import {Injectable} from "@nestjs/common";
+import {Inject, Injectable} from "@nestjs/common";
 import {
     registerDecorator,
     ValidationArguments,
@@ -6,9 +6,8 @@ import {
     ValidatorConstraint,
     ValidatorConstraintInterface
 } from "class-validator";
-import {InjectModel} from "@nestjs/mongoose";
-import {Model} from "mongoose";
-import {User} from "../../../features/users/domain/user.entity";
+import {UserRepository} from "../../../features/users/infrastructure/user.repository";
+
 
 // Обязательна регистрация в ioc
 @ValidatorConstraint({name:'IsUnique', async:true})
@@ -18,14 +17,16 @@ import {User} from "../../../features/users/domain/user.entity";
 // и устанавливается асинхронный режим валидации.
 @Injectable()
 export class IsUniqueConstraint implements ValidatorConstraintInterface {
-    constructor(
-        @InjectModel(User.name) private readonly userModel: Model<User>,
-    ) {}
-
+    constructor(private readonly userRepository: UserRepository) {
+        console.log('IsUniqueConstraint initialized');
+        console.log('UserRepository:', this.userRepository);
+    }
     async validate(value: any, args: ValidationArguments) {
         const [property] = args.constraints;
-        const count = await this.userModel.countDocuments({ [property]: value });
-        return count === 0;
+        const user=await this.userRepository.findByLoginOrEmail(value)
+        return !user
+        /*const count = await this.userModel.countDocuments({ [property]: value });
+        return count === 0;*/
     }
 
     defaultMessage(args: ValidationArguments) {
