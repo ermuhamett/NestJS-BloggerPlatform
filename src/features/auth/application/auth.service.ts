@@ -98,13 +98,13 @@ export class AuthService {
     async newUserPassword(newPassword:string, recoveryCode:string){
         const user=await this.userRepository.findUserByRecoveryCode(recoveryCode)
         if(!user || user.emailConfirmation.passwordRecoveryCode!==recoveryCode){
-            throw new BadRequestException('Incorrect verification code')
+            throw new BadRequestException({ message: 'Incorrect verification code', field: 'code' })
         }
         if(user.emailConfirmation.isPasswordRecoveryConfirmed){
-            throw new BadRequestException('Recovery password is already confirmed')
+            throw new BadRequestException({message:'Recovery password is already confirmed', field:'code'})
         }
         if(user.emailConfirmation.passwordRecoveryCodeExpirationDate && user.emailConfirmation.passwordRecoveryCodeExpirationDate < new Date()){
-            throw new BadRequestException('Confirmed code expired')
+            throw new BadRequestException({message:'Confirmed code expired', field:'code'})
         }
         const newPasswordHash=await this.bcryptService.generateHash(newPassword)
         user.updatePasswordRecoveryInfo(newPasswordHash)
@@ -113,8 +113,11 @@ export class AuthService {
 
     async resendingEmail(email:string){
         const user=await this.userRepository.findByLoginOrEmail(email)
+        if (!user) {
+            throw new BadRequestException({ message: 'User not found', field: 'email' });
+        }
         if (user.emailConfirmation.isConfirmed){
-            throw new BadRequestException('User already confirmed')
+            throw new BadRequestException({ message: 'User already confirmed', field: 'email' })
         }
         user.updateEmailConfirmationInfo()
         await user.save()

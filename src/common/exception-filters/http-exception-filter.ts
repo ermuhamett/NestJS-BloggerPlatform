@@ -17,16 +17,19 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const status = exception.getStatus();
 
     if (status === HttpStatus.BAD_REQUEST) {
+      const responseBody: any = exception.getResponse();
       const errorsResponse = {
         errorsMessages: [],
       };
 
-      const responseBody: any = exception.getResponse();
-
+      // Обработка одной ошибки или массива ошибок
       if (Array.isArray(responseBody.message)) {
-        responseBody.message.forEach((e) =>
-          errorsResponse.errorsMessages.push(e),
-        );
+        responseBody.message.forEach((error) => {
+          errorsResponse.errorsMessages.push(error);
+        });
+      } else if (typeof responseBody.message === 'string') {
+        // Если ошибка представлена в виде простой строки
+        errorsResponse.errorsMessages.push({ message: responseBody.message, field: responseBody.field });
       } else {
         errorsResponse.errorsMessages.push(responseBody.message);
       }

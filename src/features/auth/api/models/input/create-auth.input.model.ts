@@ -24,7 +24,7 @@ export class PasswordRecoveryDto {
 export class RegistrationEmailResendingDto {
     @IsOptionalEmail()
     @Matches('^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$')
-    @IsUnique('email')
+    //@IsUnique('email')
     email: string;
 }
 
