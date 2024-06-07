@@ -11,7 +11,6 @@ import {TestingModule} from "./features/testing/api/testing.module";
 import {UserModule} from "./features/users/api/user.module";
 import {AuthModule} from "./features/auth/api/auth.module";
 import {ConfigModule} from "@nestjs/config";
-import {JwtModule} from "@nestjs/jwt";
 import {IsUniqueConstraint} from "./common/decorators/validate/uniqueInDatabase";
 import {ThrottlerModule} from "@nestjs/throttler";
 
