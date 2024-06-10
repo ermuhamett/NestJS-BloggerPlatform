@@ -1,4 +1,4 @@
-import {
+/*import {
   BadRequestException,
   HttpException,
   HttpStatus,
@@ -11,9 +11,9 @@ import { BcryptService } from '../../../base/adapters/auth/bcrypt.service';
 import { JwtService } from '../../../base/adapters/auth/jwt.service';
 import { UserCreateDto } from '../../users/api/models/input/create-user.input.model';
 import { UsersService } from '../../users/application/users.service';
-import { EmailService } from '../../../base/adapters/email/email.service';
+import { EmailService } from '../../../base/adapters/email/email.service';*/
 
-@Injectable()
+/*@Injectable()
 export class AuthService {
   constructor(
     private readonly userRepository: UserRepository,
@@ -23,7 +23,7 @@ export class AuthService {
     private readonly emailService: EmailService,
   ) {}
 
-  async loginUser(dto: LoginInputDto) {
+  /*async loginUser(dto: LoginInputDto) {
     const user = await this.userRepository.findByLoginOrEmail(dto.loginOrEmail);
     if (!user) {
       throw new UnauthorizedException('Incorrect login or email');
@@ -158,4 +158,4 @@ export class AuthService {
       console.error('Error sending recovery code:', error);
     }
   }
-}
+}*/

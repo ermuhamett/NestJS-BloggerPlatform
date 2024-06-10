@@ -18,19 +18,25 @@ import {
   PasswordRecoveryDto,
   RegistrationEmailResendingDto,
 } from './models/input/create-auth.input.model';
-import { AuthService } from '../application/auth.service';
 import { Response } from 'express';
 import { UserCreateDto } from '../../users/api/models/input/create-user.input.model';
 import { AuthGuard } from '@nestjs/passport';
 import { UserQueryRepository } from '../../users/infrastructure/user.query.repository';
 import { SkipThrottle, ThrottlerGuard } from '@nestjs/throttler';
+import { CommandBus } from '@nestjs/cqrs';
+import { LoginCommand } from '../application/usecases/login-user-usecase';
+import { PasswordRecoveryCommand } from '../application/usecases/password-recovery-usecase';
+import { NewPasswordCommand } from '../application/usecases/new-password-usecase';
+import { ConfirmUserCommand } from '../application/usecases/confirm-user-usecase';
+import { RegisterCommand } from '../application/usecases/register-user-usecase';
+import { ResendingEmailCommand } from '../application/usecases/resending-email-usecase';
 
 @ApiTags('Auth')
 @Controller('auth')
 @UseGuards(ThrottlerGuard) // Применение на уровне контроллера
 export class AuthController {
   constructor(
-    private readonly authService: AuthService,
+    private readonly commandBus: CommandBus,
     private readonly userQueryRepository: UserQueryRepository,
   ) {}
 
@@ -41,7 +47,7 @@ export class AuthController {
     @Body() loginDto: LoginInputDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const tokens = await this.authService.loginUser(loginDto);
+    const tokens = await this.commandBus.execute(new LoginCommand(loginDto)); //await this.authService.loginUser(loginDto);
     res.cookie('refreshToken', tokens.refreshToken, {
       httpOnly: true,
       secure: true,
@@ -52,28 +58,40 @@ export class AuthController {
   @Post('password-recovery')
   @HttpCode(HttpStatus.NO_CONTENT)
   async passwordRecovery(@Body() passwordRecoveryDto: PasswordRecoveryDto) {
-    return await this.authService.passwordRecovery(passwordRecoveryDto.email); //done, not tested
+    return await this.commandBus.execute(
+      new PasswordRecoveryCommand(passwordRecoveryDto.email),
+    ); //await this.authService.passwordRecovery(passwordRecoveryDto.email); //done, not tested
   }
 
   @Post('new-password')
   @HttpCode(HttpStatus.NO_CONTENT)
   async newPassword(@Body() newPasswordDto: NewPasswordDto) {
-    return await this.authService.newUserPassword(
+    return await this.commandBus.execute(
+      new NewPasswordCommand(
+        newPasswordDto.newPassword,
+        newPasswordDto.recoveryCode,
+      ),
+    );
+    /*return await this.authService.newUserPassword(
       newPasswordDto.newPassword,
       newPasswordDto.recoveryCode,
-    ); //done, not tested
+    );*/ //done, not tested
   }
 
   @Post('registration-confirmation')
   @HttpCode(HttpStatus.NO_CONTENT)
   async registrationConfirmation(@Body() confirmationDto: ConfirmationCodeDto) {
-    return await this.authService.confirmUser(confirmationDto.code); //done, not tested
+    return await this.commandBus.execute(
+      new ConfirmUserCommand(confirmationDto.code),
+    );
+    //return await this.authService.confirmUser(confirmationDto.code); //done, not tested
   }
 
   @Post('registration')
   @HttpCode(HttpStatus.NO_CONTENT)
   async registration(@Body() userCreateDto: UserCreateDto) {
-    return await this.authService.registerUser(userCreateDto); //done, worked
+    return await this.commandBus.execute(new RegisterCommand(userCreateDto));
+    //return await this.authService.registerUser(userCreateDto); //done, worked
   }
 
   @Post('registration-email-resending')
@@ -81,7 +99,10 @@ export class AuthController {
   async registrationEmailResending(
     @Body() resendingDto: RegistrationEmailResendingDto,
   ) {
-    return await this.authService.resendingEmail(resendingDto.email);
+    return await this.commandBus.execute(
+      new ResendingEmailCommand(resendingDto.email),
+    );
+    //return await this.authService.resendingEmail(resendingDto.email);
   }
 
   @SkipThrottle()

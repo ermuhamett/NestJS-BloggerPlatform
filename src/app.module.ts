@@ -14,7 +14,7 @@ import { CqrsModule } from '@nestjs/cqrs';
 @Module({
   // Регистрация модулей
   imports: [
-    CqrsModule,
+    CqrsModule.forRoot(), //Может быть так сработает надо тестить
     MongooseModule.forRoot(appSettings.api.MONGO_CONNECTION_URI),
     ConfigModule.forRoot({ isGlobal: true }),
     ThrottlerModule.forRoot([
