@@ -1,28 +1,32 @@
-import {BadGatewayException, Injectable, InternalServerErrorException} from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { UserRepository } from '../infrastructure/user.repository';
-import {UserCreateDto} from "../api/models/input/create-user.input.model";
-import {User} from "../domain/user.entity";
-import {BcryptService} from "../../../base/adapters/auth/bcrypt.service";
+import { UserCreateDto } from '../api/models/input/create-user.input.model';
+import { User } from '../domain/user.entity';
+import { BcryptService } from '../../../base/adapters/auth/bcrypt.service';
 
 // Для провайдера всегда необходимо применять декоратор @Injectable() и регистрировать в модуле
 @Injectable()
 export class UsersService {
-  constructor(private usersRepository: UserRepository,
-              private readonly bcryptService: BcryptService,) {}
+  constructor(
+    private usersRepository: UserRepository,
+    private readonly bcryptService: BcryptService,
+  ) {}
 
-  async create(userDto:UserCreateDto) {
+  async create(userDto: UserCreateDto) {
     // email send message
     // this.emailAdapter.send(message);
     //const {login, email, password}=userDto
-    const passwordHash=await this.bcryptService.generateHash(userDto.password)
-    const user=new User(userDto,passwordHash)
-    const newUserId=await this.usersRepository.insertUser(user)
-    if(!newUserId){
-      throw new InternalServerErrorException('User cant created')
+    const passwordHash = await this.bcryptService.generateHash(
+      userDto.password,
+    );
+    const user = new User(userDto, passwordHash);
+    const newUserId = await this.usersRepository.insertUser(user);
+    if (!newUserId) {
+      throw new InternalServerErrorException('User cant created');
     }
-    return newUserId
+    return newUserId;
   }
-  async deleteUserById(userId:string){
-    return await this.usersRepository.deleteUserById(userId)
+  async deleteUserById(userId: string) {
+    return await this.usersRepository.deleteUserById(userId);
   }
 }

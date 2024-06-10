@@ -7,8 +7,8 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { HttpExceptionFilter } from '../common/exception-filters/http-exception-filter';
 import { appSettings } from './app-settings';
 import { LoggerMiddlewareFunc } from '../common/middlewares/logger.middleware';
-import {LoggingInterceptor} from "../common/interceptors/logging.interceptor";
-import cookieParser from "cookie-parser";
+import { LoggingInterceptor } from '../common/interceptors/logging.interceptor';
+import cookieParser from 'cookie-parser';
 
 interface CustomError {
   field: string;
@@ -21,14 +21,15 @@ const APP_PREFIX = '/api';
 // Используем данную функцию в main.ts и в e2e тестах
 export const applyAppSettings = (app: INestApplication) => {
   // Применение глобальных Interceptors
-   app.useGlobalInterceptors(new LoggingInterceptor())
+  app.useGlobalInterceptors(new LoggingInterceptor());
 
   // Применение глобальных Guards
   //  app.useGlobalGuards(new AuthGuard());
 
   // Применить middleware глобально
   app.use(LoggerMiddlewareFunc);
-  app.use(cookieParser())
+
+  app.use(cookieParser());
   // Установка префикса
   setAppPrefix(app);
 
@@ -68,7 +69,7 @@ const setSwagger = (app: INestApplication) => {
 
 const setAppPipes = (app: INestApplication) => {
   app.useGlobalPipes(
-      //для правильного отображения ошибок, настраиваем useGlobalPipes
+    //для правильного отображения ошибок, настраиваем useGlobalPipes
     new ValidationPipe({
       // Для работы трансформации входящих данных
       transform: true,
@@ -76,16 +77,16 @@ const setAppPipes = (app: INestApplication) => {
       stopAtFirstError: true,
       // Перехватываем ошибку, кастомизируем её и выкидываем 400 с собранными данными
       exceptionFactory: (errors) => {
-        const customErrors:CustomError[] = [];
+        const customErrors: CustomError[] = [];
 
         errors.forEach((e) => {
           //Происходит перебор каждой ошибки e в исходном массиве,
           //достаём данные из errors.constraints и преобразуем в массив
-          const constraintKeys = Object.keys(e.constraints);//Для каждой ошибки извлекается объект constraints, и его ключи преобразуются в массив строк constraintKeys.
+          const constraintKeys = Object.keys(e.constraints); //Для каждой ошибки извлекается объект constraints, и его ключи преобразуются в массив строк constraintKeys.
 
           constraintKeys.forEach((cKey) => {
             // Каждый ключ cKey из массива constraintKeys перебирается внутри вложенного цикла.
-            const msg = e.constraints[cKey];//Сохраняется сообщение об ошибке для конкретного ключа cKey из constraints.
+            const msg = e.constraints[cKey]; //Сохраняется сообщение об ошибке для конкретного ключа cKey из constraints.
             // Для каждого ключа cKey создается новый объект с полями field (свойство property из исходной ошибки) и message (сообщение об ошибке из constraints),
             // который затем добавляется в массив customErrors.
             customErrors.push({ field: e.property, message: msg });

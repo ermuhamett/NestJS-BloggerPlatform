@@ -4,7 +4,6 @@ import { Trim } from '../transform/trim';
 
 // Объединение декораторов
 // https://docs.nestjs.com/custom-decorators#decorator-composition
-
 export const IsOptionalEmail = () => {
     return applyDecorators(Trim(), IsString(), IsNotEmpty(), IsEmail());
 }
@@ -16,4 +15,3 @@ export const IsOptionalString=()=>{
 export const IsStringLength=(min:number, max:number)=>{
     return applyDecorators(Trim(), IsString(), IsNotEmpty(), Length(min, max))
 }
-

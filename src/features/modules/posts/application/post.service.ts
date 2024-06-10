@@ -18,31 +18,23 @@ export class PostService {
             throw new NotFoundException('Blog not found in database')
         }
         const post = new Post(postDto, blog.name)
-        /*const post:Post={
-            title:postDto.title,
-            shortDescription:postDto.shortDescription,
-            content:postDto.content,
-            blogId:postDto.blogId,
-            blogName:blogName,
-            createdAt:new Date().toISOString()
-        }*/
-        const newPostId = await this.postRepository.insertPost(post)
-        if (!newPostId) {
-            return {
-                error: 'Ошибка при созданий поста'
-            }
-        }
-        return newPostId
+    const newPostId = await this.postRepository.insertPost(post);
+    if (!newPostId) {
+      return {
+        error: 'Ошибка при созданий поста',
+      };
     }
-    async updatePostById(postId:string, postDto:PostCreateDto){
-        const existingPost=await this.postRepository.find(postId)
-        if(!existingPost){
-            throw new NotFoundException('Post not found in database')
-        }
-        existingPost.updatePost(postDto)
-        await existingPost.save()
+    return newPostId;
+  }
+  async updatePostById(postId: string, postDto: PostCreateDto) {
+    const existingPost = await this.postRepository.find(postId);
+    if (!existingPost) {
+      throw new NotFoundException('Post not found in database');
     }
-    async deletePostById(postId:string){
-        return await this.postRepository.deletePostById(postId)
-    }
+    existingPost.updatePost(postDto);
+    await existingPost.save();
+  }
+  async deletePostById(postId: string) {
+    return await this.postRepository.deletePostById(postId);
+  }
 }

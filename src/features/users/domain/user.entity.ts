@@ -75,8 +75,8 @@ export class User {
         this.emailConfirmation.confirmationCode=uuidv4();
         this.emailConfirmation.confirmationCodeExpirationDate = add(new Date(), { hours: 1, minutes: 30 })
     }
-    //TODO: replace with new this()
-    /*static create(name: string, email: string | null ) {
+  //TODO: replace with new this()
+  /*static create(name: string, email: string | null ) {
       const user = new this();
 
       user.name = name;
@@ -87,5 +87,5 @@ export class User {
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
-UserSchema.loadClass(User)
+UserSchema.loadClass(User);
 export type UserDocument = HydratedDocument<User>;

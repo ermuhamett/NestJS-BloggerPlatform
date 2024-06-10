@@ -8,10 +8,6 @@ export class UserOutputDto {
         readonly email: string,
         readonly createdAt: string,
     ) {}
-
-    /*id: string;
-    name: string
-    email: string*/
 }
 
 // MAPPERS
@@ -27,12 +23,12 @@ export class UserOutputDto {
 };*/
 
 export class UserMapper {
-    public static toView(user: UserDocument): UserOutputDto {
-        return {
-            id: user.id,
-            login: user.login,
-            email: user.email,
-            createdAt: user.createdAt
-        }
-    }
+  public static toView(user: UserDocument): UserOutputDto {
+    return {
+      id: user.id,
+      login: user.login,
+      email: user.email,
+      createdAt: user.createdAt,
+    };
+  }
 }

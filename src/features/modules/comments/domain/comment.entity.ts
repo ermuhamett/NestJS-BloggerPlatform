@@ -1,35 +1,35 @@
-import {Prop, Schema, SchemaFactory} from "@nestjs/mongoose";
-import {HydratedDocument} from "mongoose";
-
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { HydratedDocument } from 'mongoose';
 
 // Создание вложенной схемы CommentatorSchema
-@Schema({_id: false})
+@Schema({ _id: false })
 export class CommentatorInfo {
-    @Prop()
-    userId: string;
+  @Prop()
+  userId: string;
 
-    @Prop()
-    userLogin: string;
+  @Prop()
+  userLogin: string;
 }
 
-export const CommentatorInfoSchema = SchemaFactory.createForClass(CommentatorInfo);
+export const CommentatorInfoSchema =
+  SchemaFactory.createForClass(CommentatorInfo);
 
 // Создание основной схемы CommentsSchema
 @Schema()
-export class Comment{
-    @Prop()
-    postId: string;
+export class Comment {
+  @Prop()
+  postId: string;
 
-    @Prop()
-    content: string;
+  @Prop()
+  content: string;
 
-    @Prop({type: CommentatorInfoSchema})
-    commentatorInfo: CommentatorInfo;
+  @Prop({ type: CommentatorInfoSchema })
+  commentatorInfo: CommentatorInfo;
 
-    @Prop({type: String})
-    createdAt: string;
+  @Prop({ type: String })
+  createdAt: string;
 }
 
 export const CommentSchema = SchemaFactory.createForClass(Comment);
-CommentSchema.loadClass(Comment)
-export type CommentDocument = HydratedDocument<Comment>
+CommentSchema.loadClass(Comment);
+export type CommentDocument = HydratedDocument<Comment>;

@@ -1,55 +1,54 @@
-import {
-  MiddlewareConsumer,
-  Module,
-  NestModule,
-} from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { appSettings } from './settings/app-settings';
 import { LoggerMiddleware } from './common/middlewares/logger.middleware';
-import {BlogsModule} from "./features/modules/blogs.module";
-import {TestingModule} from "./features/testing/api/testing.module";
-import {UserModule} from "./features/users/api/user.module";
-import {AuthModule} from "./features/auth/api/auth.module";
-import {ConfigModule} from "@nestjs/config";
-import {IsUniqueConstraint} from "./common/decorators/validate/uniqueInDatabase";
-import {ThrottlerModule} from "@nestjs/throttler";
-
+import { BlogsModule } from './features/modules/blogs.module';
+import { TestingModule } from './features/testing/api/testing.module';
+import { UserModule } from './features/users/api/user.module';
+import { AuthModule } from './features/auth/api/auth.module';
+import { ConfigModule } from '@nestjs/config';
+import { IsUniqueConstraint } from './common/decorators/validate/uniqueInDatabase';
+import { ThrottlerModule } from '@nestjs/throttler';
+import { CqrsModule } from '@nestjs/cqrs';
 
 @Module({
   // Регистрация модулей
   imports: [
+    CqrsModule,
     MongooseModule.forRoot(appSettings.api.MONGO_CONNECTION_URI),
-    ConfigModule.forRoot({isGlobal:true}),
-    ThrottlerModule.forRoot([{
-      ttl:10000, // Время в миллисекундах, за которое считается количество запросов
-      limit:5 // Максимальное количество запросов за указанный период времени
-    }]),
+    ConfigModule.forRoot({ isGlobal: true }),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 10000, // Время в миллисекундах, за которое считается количество запросов
+        limit: 5, // Максимальное количество запросов за указанный период времени
+      },
+    ]),
     BlogsModule,
     TestingModule,
     UserModule,
-    AuthModule
+    AuthModule,
   ],
   // Регистрация провайдеров
   providers: [
-    IsUniqueConstraint
+    IsUniqueConstraint,
     //...usersProviders,
     /* {
-            provide: UsersService,
-            useClass: UsersService,
-        },*/
+                provide: UsersService,
+                useClass: UsersService,
+            },*/
     /*{
-            provide: UsersService,
-            useValue: {method: () => {}},
-
-        },*/
+                provide: UsersService,
+                useValue: {method: () => {}},
+    
+            },*/
     // Регистрация с помощью useFactory (необходимы зависимости из ioc, подбор провайдера, ...)
     /* {
-            provide: UsersService,
-            useFactory: (repo: UserRepository) => {
-                return new UsersService(repo);
-            },
-            inject: [UserRepository]
-        }*/
+                provide: UsersService,
+                useFactory: (repo: UserRepository) => {
+                    return new UsersService(repo);
+                },
+                inject: [UserRepository]
+            }*/
   ],
   // Регистрация контроллеров
   //controllers: [UserController],

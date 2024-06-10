@@ -1,5 +1,5 @@
-export class MeOutputDto{
-    email:string;
-    login:string;
-    userId:string;
+export class MeOutputDto {
+  email: string;
+  login: string;
+  userId: string;
 }
