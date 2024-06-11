@@ -11,6 +11,7 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { BlogService } from '../application/blog.service';
 import { BlogCreateDto } from './models/input/blog.input.model';
@@ -23,6 +24,7 @@ import {
   QueryInputType,
   QueryParams,
 } from '../../../../base/adapters/query/query.class';
+import { AuthGuard } from '@nestjs/passport';
 
 @ApiTags('Blogs')
 @Controller('blogs')
@@ -38,6 +40,7 @@ export class BlogController {
   ///TODO query репозиторий вернет ViewModel или OutputModel.
   // find нужно использовать внутри обычной репозиторий чтобы там получить hydrated document, то есть как промис вернется умный документ
   // entity можно добавить методы чтобы сразу создать или обновить их в сервисе, ну создать конечно неправильно будет но обновить это нормально
+  @UseGuards(AuthGuard('basic'))
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async createBlog(@Body() blogDto: BlogCreateDto) {
@@ -46,6 +49,7 @@ export class BlogController {
     //work
   }
 
+  @UseGuards(AuthGuard('basic'))
   @Post(':blogId/posts')
   @HttpCode(HttpStatus.CREATED)
   async createPostForBlog(
@@ -56,10 +60,10 @@ export class BlogController {
     if (!blog) {
       throw new HttpException('Blog not found', HttpStatus.NOT_FOUND);
     }
-    const createdPostId = await this.postService.createPost(
-      { ...postDto, blogId },
-      blog.name,
-    );
+    const createdPostId = await this.postService.createPost({
+      ...postDto,
+      blogId,
+    });
     if (!createdPostId) {
       throw new HttpException(
         'Some error when created post',
@@ -70,6 +74,7 @@ export class BlogController {
     //work
   }
 
+  @UseGuards(AuthGuard('basic'))
   @Put(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async updateBlogById(
@@ -118,6 +123,7 @@ export class BlogController {
     );
   }
 
+  @UseGuards(AuthGuard('basic'))
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteBlogById(@Param('id') id: string) {

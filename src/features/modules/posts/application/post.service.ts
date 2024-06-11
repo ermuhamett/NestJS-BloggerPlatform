@@ -8,16 +8,17 @@ import {BlogRepository} from "../../blogs/infrastructure/blog.repository";
 
 @Injectable()
 export class PostService {
-    constructor(private postRepository: PostRepository,
-                private blogRepository: BlogRepository) {
-    }
+  constructor(
+    private postRepository: PostRepository,
+    private blogRepository: BlogRepository,
+  ) {}
 
-    async createPost(postDto: PostCreateDto, blogName?: string) {
-        const blog = await this.blogRepository.find(postDto.blogId)
-        if(!blog){
-            throw new NotFoundException('Blog not found in database')
-        }
-        const post = new Post(postDto, blog.name)
+  async createPost(postDto: PostCreateDto) {
+    const blog = await this.blogRepository.find(postDto.blogId);
+    if (!blog) {
+      throw new NotFoundException('Blog not found in database');
+    }
+    const post = new Post(postDto, blog.name)
     const newPostId = await this.postRepository.insertPost(post);
     if (!newPostId) {
       return {

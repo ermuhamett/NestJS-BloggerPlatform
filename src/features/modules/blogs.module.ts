@@ -19,6 +19,8 @@ import { Comment, CommentSchema } from './comments/domain/comment.entity';
 import { PostController } from './posts/api/post.controller';
 import { CommentQueryRepository } from './comments/infrastructure/comment.query.repository';
 import { CommentController } from './comments/api/comment.controller';
+import { BasicStrategy } from '../../common/strategies/basic.strategy';
+import { JwtStrategy } from '../../common/strategies/jwt.strategy';
 
 const blogProviders: Provider[] = [
   BlogService,
@@ -46,7 +48,9 @@ const commentProviders: Provider[] = [CommentQueryRepository];
   providers: [
     ...blogProviders,
     ...postProviders,
-    ...commentProviders /*BlogService, PostService, BlogRepository, BlogQueryRepository, PostRepository, PostQueryRepository*/,
+    ...commentProviders,
+    BasicStrategy,
+    JwtStrategy /*BlogService, PostService, BlogRepository, BlogQueryRepository, PostRepository, PostQueryRepository*/,
   ],
 })
 export class BlogsModule {}
