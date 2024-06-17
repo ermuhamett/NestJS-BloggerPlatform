@@ -11,6 +11,8 @@ import {
   Post,
   Put,
   Query,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
 import { PostService } from '../application/post.service';
 import { PostRepository } from '../infrastructure/post.repository';
@@ -21,6 +23,9 @@ import {
   QueryParams,
 } from '../../../../base/adapters/query/query.class';
 import { CommentQueryRepository } from '../../comments/infrastructure/comment.query.repository';
+import { LikeInputDto } from '../../../likes/api/models/likes.info.model';
+import { UserRepository } from '../../../users/infrastructure/user.repository';
+import { AuthGuard } from '@nestjs/passport';
 
 ApiTags('Posts');
 @Controller('posts')
@@ -30,11 +35,33 @@ export class PostController {
     private postRepository: PostRepository,
     private postQueryRepository: PostQueryRepository,
     private commentQueryRepository: CommentQueryRepository,
+    private userRepository: UserRepository,
   ) {}
 
+  @UseGuards(AuthGuard('jwt'))
+  @Put(':postId/like-status')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async updatePostLikeStatus(
+    @Request() req,
+    @Param('postId') postId: string,
+    @Body() likeDto: LikeInputDto,
+  ) {
+    const post = await this.postRepository.find(postId);
+    const user = await this.userRepository.find(req.user.userId);
+    if (!post) {
+      throw new HttpException('Post not found', HttpStatus.NOT_FOUND);
+    }
+    return await this.postService.createLikePost(
+      postId,
+      likeDto.likeStatus,
+      user.id.toString(),
+      user.login,
+    );
+  }
   @Get(':postId/comments')
   @HttpCode(HttpStatus.OK)
   async getCommentsForPost(
+    @Request() req,
     @Param('postId') postId: string,
     @Query() query: QueryInputType,
   ) {
@@ -46,6 +73,7 @@ export class PostController {
     return await this.commentQueryRepository.getCommentsWithPaging(
       sanitizedQuery,
       postId,
+      req.user.userId,
     );
   }
 
@@ -56,6 +84,7 @@ export class PostController {
     return await this.postQueryRepository.getPostsWithPaging(sanitizedQuery);
   }
 
+  @UseGuards(AuthGuard('basic'))
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async createPost(@Body() postDto: PostCreateDto) {
@@ -75,6 +104,7 @@ export class PostController {
     return await this.postQueryRepository.getPostById(id);
   }
 
+  @UseGuards(AuthGuard('basic'))
   @Put(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async updatePostById(
@@ -85,6 +115,7 @@ export class PostController {
     //Можно в контроллере не писать HttpException так как сервис может кинуть NotFound и контроллер автоматический обработает его
   }
 
+  @UseGuards(AuthGuard('basic'))
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deletePostById(@Param('id') id: string) {

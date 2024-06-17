@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
+import { PostLikeDto } from '../../modules/posts/api/models/input/post.input.model';
 
 export type CommentLikesDocument = HydratedDocument<CommentLikes>;
 export type PostLikesDocument = HydratedDocument<PostLikes>;
@@ -36,7 +37,17 @@ export class PostLikes {
 
   @Prop()
   status: string;
+
+  constructor(dto: PostLikeDto) {
+    this.postId = dto.postId;
+    this.likedUserId = dto.userId;
+    this.likedUserLogin = dto.userLogin;
+    this.addedAt = new Date().toISOString();
+    this.status = dto.status;
+  }
 }
 
 export const CommentLikesSchema = SchemaFactory.createForClass(CommentLikes);
+CommentLikesSchema.loadClass(CommentLikes);
 export const PostLikesSchema = SchemaFactory.createForClass(PostLikes);
+PostLikesSchema.loadClass(PostLikes);

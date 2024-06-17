@@ -1,5 +1,6 @@
 import { IsStringLength } from '../../../../../../common/decorators/validate/is-optional-email';
 import { IsString } from 'class-validator';
+import { LikeStatus } from '../../../../../likes/api/models/likes.info.model';
 
 export class PostCreateDto {
   @IsStringLength(1, 30)
@@ -24,4 +25,12 @@ export class BlogPostCreateDto {
 
   @IsStringLength(1, 1000)
   content: string;
+}
+
+export class PostLikeDto {
+  postId: string;
+  userId: string;
+  userLogin: string;
+  //addedAt: string;
+  status: LikeStatus;
 }

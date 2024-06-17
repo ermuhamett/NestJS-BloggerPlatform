@@ -1,9 +1,10 @@
-import {Injectable, NotFoundException} from "@nestjs/common";
-import {PostRepository} from "../infrastructure/post.repository";
-import {PostCreateDto} from "../api/models/input/post.input.model";
-import {Post} from "../domain/post.entity";
-import {BlogQueryRepository} from "../../blogs/infrastructure/blog.query.repository";
-import {BlogRepository} from "../../blogs/infrastructure/blog.repository";
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { PostRepository } from '../infrastructure/post.repository';
+import { PostCreateDto } from '../api/models/input/post.input.model';
+import { Post } from '../domain/post.entity';
+import { BlogRepository } from '../../blogs/infrastructure/blog.repository';
+import { LikeStatus } from '../../../likes/api/models/likes.info.model';
+import { PostLikes } from '../../../likes/domain/like.entity';
 
 
 @Injectable()
@@ -26,6 +27,20 @@ export class PostService {
       };
     }
     return newPostId;
+  }
+  async createLikePost(
+    postId: string,
+    status: LikeStatus,
+    userId: string,
+    userLogin: string,
+  ) {
+    const updatePostLike = new PostLikes({
+      postId,
+      status,
+      userId,
+      userLogin,
+    });
+    await this.postRepository.updatePostLike(updatePostLike);
   }
   async updatePostById(postId: string, postDto: PostCreateDto) {
     const existingPost = await this.postRepository.find(postId);
