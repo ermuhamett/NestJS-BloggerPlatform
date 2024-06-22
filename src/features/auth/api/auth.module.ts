@@ -13,7 +13,7 @@ import { NewPasswordUseCase } from '../application/usecases/new-password-usecase
 import { ConfirmUserUseCase } from '../application/usecases/confirm-user-usecase';
 import { RegisterUserUseCase } from '../application/usecases/register-user-usecase';
 import { ResendingEmailUseCase } from '../application/usecases/resending-email-usecase';
-import { CqrsModule } from '@nestjs/cqrs';
+import { OptionalAuthGuard } from '../../../common/guards/optional.auth.guard';
 
 const useCases = [
   LoginUserUseCase,
@@ -41,7 +41,14 @@ const useCases = [
       inject: [ConfigService],
     }),
   ],
-  providers: [JwtStrategy, BcryptService, JwtService, ...useCases], //А сюда все остальное что через Injectable.Если они внутри module то импортировать только Module
+  providers: [
+    JwtStrategy,
+    BcryptService,
+    JwtService,
+    ...useCases,
+    OptionalAuthGuard,
+  ], //А сюда все остальное что через Injectable.Если они внутри module то импортировать только Module
   controllers: [AuthController],
+  exports: [JwtModule],
 })
 export class AuthModule {}

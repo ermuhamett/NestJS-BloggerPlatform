@@ -28,6 +28,15 @@ export class Comment {
 
   @Prop({ type: String })
   createdAt: string;
+  constructor(dto: Partial<Comment>) {
+    this.postId = dto.postId;
+    this.content = dto.content;
+    this.commentatorInfo = {
+      userId: dto.commentatorInfo.userId,
+      userLogin: dto.commentatorInfo.userLogin,
+    } as CommentatorInfo;
+    this.createdAt = dto.createdAt || new Date().toISOString();
+  }
 }
 
 export const CommentSchema = SchemaFactory.createForClass(Comment);

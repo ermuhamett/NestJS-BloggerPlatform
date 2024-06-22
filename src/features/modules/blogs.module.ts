@@ -21,6 +21,11 @@ import { CommentQueryRepository } from './comments/infrastructure/comment.query.
 import { CommentController } from './comments/api/comment.controller';
 import { BasicStrategy } from '../../common/strategies/basic.strategy';
 import { JwtStrategy } from '../../common/strategies/jwt.strategy';
+import { OptionalAuthGuard } from '../../common/guards/optional.auth.guard';
+import { AuthModule } from '../auth/api/auth.module';
+import { CommentService } from './comments/application/comment.service';
+import { CommentRepository } from './comments/infrastructure/comment.repository';
+import { UserModule } from '../users/api/user.module';
 
 const blogProviders: Provider[] = [
   BlogService,
@@ -33,7 +38,11 @@ const postProviders: Provider[] = [
   PostRepository,
   PostQueryRepository,
 ];
-const commentProviders: Provider[] = [CommentQueryRepository];
+const commentProviders: Provider[] = [
+  CommentService,
+  CommentRepository,
+  CommentQueryRepository,
+];
 @Module({
   imports: [
     MongooseModule.forFeature([
@@ -43,6 +52,8 @@ const commentProviders: Provider[] = [CommentQueryRepository];
       { name: Comment.name, schema: CommentSchema },
       { name: CommentLikes.name, schema: CommentLikesSchema },
     ]),
+    AuthModule,
+    UserModule,
   ],
   controllers: [BlogController, PostController, CommentController],
   providers: [
@@ -50,7 +61,8 @@ const commentProviders: Provider[] = [CommentQueryRepository];
     ...postProviders,
     ...commentProviders,
     BasicStrategy,
-    JwtStrategy /*BlogService, PostService, BlogRepository, BlogQueryRepository, PostRepository, PostQueryRepository*/,
+    JwtStrategy,
+    OptionalAuthGuard /*BlogService, PostService, BlogRepository, BlogQueryRepository, PostRepository, PostQueryRepository*/,
   ],
 })
 export class BlogsModule {}

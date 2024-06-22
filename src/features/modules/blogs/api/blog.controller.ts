@@ -11,6 +11,7 @@ import {
   Post,
   Put,
   Query,
+  Request,
   UseGuards,
 } from '@nestjs/common';
 import { BlogService } from '../application/blog.service';
@@ -25,6 +26,7 @@ import {
   QueryParams,
 } from '../../../../base/adapters/query/query.class';
 import { AuthGuard } from '@nestjs/passport';
+import { OptionalAuthGuard } from '../../../../common/guards/optional.auth.guard';
 
 @ApiTags('Blogs')
 @Controller('blogs')
@@ -107,8 +109,10 @@ export class BlogController {
     //work
   }
 
+  @UseGuards(OptionalAuthGuard)
   @Get(':blogId/posts')
   async getPostsForBlog(
+    @Request() req,
     @Param('blogId') blogId: string,
     @Query() query: QueryInputType,
   ) {
@@ -120,6 +124,7 @@ export class BlogController {
     return await this.postQueryRepository.getPostsWithPaging(
       sanitizedQuery,
       blogId,
+      req.userId.toString(),
     );
   }
 

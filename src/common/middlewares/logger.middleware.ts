@@ -5,7 +5,7 @@ import { NextFunction, Request, Response } from 'express';
 @Injectable()
 export class LoggerMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
-    console.log('Request... in LoggerMiddleware');
+    //console.log('Request... in LoggerMiddleware');
 
     next();
   }
@@ -18,6 +18,6 @@ export const LoggerMiddlewareFunc = (
   res: Response,
   next: NextFunction,
 ) => {
-  console.log('Request... LoggerMiddlewareFunc');
+  //console.log('Request... LoggerMiddlewareFunc');
   next();
 };

@@ -26,12 +26,16 @@ import { CommentQueryRepository } from '../../comments/infrastructure/comment.qu
 import { LikeInputDto } from '../../../likes/api/models/likes.info.model';
 import { UserRepository } from '../../../users/infrastructure/user.repository';
 import { AuthGuard } from '@nestjs/passport';
+import { CommentCreateDto } from '../../comments/api/models/input/comment.input.model';
+import { CommentService } from '../../comments/application/comment.service';
+import { OptionalAuthGuard } from '../../../../common/guards/optional.auth.guard';
 
 ApiTags('Posts');
 @Controller('posts')
 export class PostController {
   constructor(
     private postService: PostService,
+    private commentService: CommentService,
     private postRepository: PostRepository,
     private postQueryRepository: PostQueryRepository,
     private commentQueryRepository: CommentQueryRepository,
@@ -58,6 +62,7 @@ export class PostController {
       user.login,
     );
   }
+  @UseGuards(OptionalAuthGuard)
   @Get(':postId/comments')
   @HttpCode(HttpStatus.OK)
   async getCommentsForPost(
@@ -73,15 +78,45 @@ export class PostController {
     return await this.commentQueryRepository.getCommentsWithPaging(
       sanitizedQuery,
       postId,
-      req.user.userId,
+      req.userId,
     );
   }
 
+  @UseGuards(AuthGuard('jwt'))
+  @Post('postId/comments')
+  @HttpCode(HttpStatus.CREATED)
+  async createCommentByPost(
+    @Request() req,
+    @Param('postId') postId: string,
+    @Body() commentDto: CommentCreateDto,
+  ) {
+    const post = await this.postRepository.find(postId);
+    const user = await this.userRepository.find(req.user.userId);
+    if (!post) {
+      throw new HttpException('Post not found', HttpStatus.NOT_FOUND);
+    }
+    const newCommentId = await this.commentService.createComment(
+      commentDto.content,
+      { id: user.id.toString(), login: user.login },
+      postId,
+    );
+    return await this.commentQueryRepository.getCommentById(
+      newCommentId,
+      user.id.toString(),
+    );
+  }
+
+  @UseGuards(OptionalAuthGuard)
   @Get()
   @HttpCode(HttpStatus.OK)
-  async getPostsWithPaging(@Query() query: QueryInputType) {
+  async getPostsWithPaging(@Query() query: QueryInputType, @Request() req) {
+    //const user = await this.userRepository.find(req.userId);
     const sanitizedQuery = new QueryParams(query).sanitize();
-    return await this.postQueryRepository.getPostsWithPaging(sanitizedQuery);
+    return await this.postQueryRepository.getPostsWithPaging(
+      sanitizedQuery,
+      '',
+      req.userId.toString(),
+    );
   }
 
   @UseGuards(AuthGuard('basic'))
@@ -98,10 +133,11 @@ export class PostController {
     return await this.postQueryRepository.getPostById(postId.toString());
   }
 
+  @UseGuards(OptionalAuthGuard)
   @Get(':id')
   @HttpCode(HttpStatus.OK)
-  async getPostById(@Param('id') id: string) {
-    return await this.postQueryRepository.getPostById(id);
+  async getPostById(@Param('id') id: string, @Request() req) {
+    return await this.postQueryRepository.getPostById(id, req.userId);
   }
 
   @UseGuards(AuthGuard('basic'))
