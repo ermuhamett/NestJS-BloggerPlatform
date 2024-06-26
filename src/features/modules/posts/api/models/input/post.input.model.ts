@@ -1,6 +1,7 @@
 import { IsStringLength } from '../../../../../../common/decorators/validate/is-optional-email';
-import { IsString } from 'class-validator';
+import { IsMongoId, IsString } from 'class-validator';
 import { LikeStatus } from '../../../../../likes/api/models/likes.info.model';
+import { IsBlogIdExists } from '../../../../../../common/decorators/validate/blogIdValidate';
 
 export class PostCreateDto {
   @IsStringLength(1, 30)
@@ -13,6 +14,8 @@ export class PostCreateDto {
   content: string;
 
   @IsString()
+  @IsMongoId()
+  @IsBlogIdExists()
   blogId: string;
 }
 

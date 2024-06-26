@@ -10,11 +10,12 @@ import { ConfigModule } from '@nestjs/config';
 import { IsUniqueConstraint } from './common/decorators/validate/uniqueInDatabase';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { CqrsModule } from '@nestjs/cqrs';
+import { BlogExistConstraint } from './common/decorators/validate/blogIdValidate';
 
 @Module({
   // Регистрация модулей
   imports: [
-    CqrsModule.forRoot(), //Может быть так сработает надо тестить
+    CqrsModule.forRoot(),
     MongooseModule.forRoot(appSettings.api.MONGO_CONNECTION_URI),
     ConfigModule.forRoot({ isGlobal: true }),
     ThrottlerModule.forRoot([
@@ -31,6 +32,7 @@ import { CqrsModule } from '@nestjs/cqrs';
   // Регистрация провайдеров
   providers: [
     IsUniqueConstraint,
+    BlogExistConstraint,
     //...usersProviders,
     /* {
                 provide: UsersService,

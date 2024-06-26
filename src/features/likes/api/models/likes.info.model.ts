@@ -38,3 +38,10 @@ export class ExtendedLikesInfo {
     public newestLikes: NewestLike[],
   ) {}
 }
+
+export class CommentLikeDb {
+  authorId: string;
+  parentId: string;
+  status: string;
+  //createdAt: string;
+}

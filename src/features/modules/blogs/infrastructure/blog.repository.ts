@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Model, ObjectId, Types } from 'mongoose';
 import { Blog, BlogDocument } from '../domain/blog.entity';
 import { BlogCreateDto } from '../api/models/input/blog.input.model';
 
@@ -33,5 +33,8 @@ export class BlogRepository {
   }
   async find(blogId: string): Promise<BlogDocument> {
     return this.blogModel.findById(blogId).exec();
+  }
+  async blogExist(blogId: ObjectId) {
+    return this.blogModel.exists({ _id: blogId }); //Метод для кастомного декортора
   }
 }

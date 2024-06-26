@@ -83,7 +83,7 @@ export class PostController {
   }
 
   @UseGuards(AuthGuard('jwt'))
-  @Post('postId/comments')
+  @Post(':postId/comments')
   @HttpCode(HttpStatus.CREATED)
   async createCommentByPost(
     @Request() req,

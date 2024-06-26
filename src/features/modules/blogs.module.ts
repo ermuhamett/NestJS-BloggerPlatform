@@ -26,6 +26,8 @@ import { AuthModule } from '../auth/api/auth.module';
 import { CommentService } from './comments/application/comment.service';
 import { CommentRepository } from './comments/infrastructure/comment.repository';
 import { UserModule } from '../users/api/user.module';
+import { CommentExistenceGuard } from '../../common/guards/comment.existence.guard';
+import { CommentOwnershipGuard } from '../../common/guards/comment.ownership.guard';
 
 const blogProviders: Provider[] = [
   BlogService,
@@ -62,7 +64,10 @@ const commentProviders: Provider[] = [
     ...commentProviders,
     BasicStrategy,
     JwtStrategy,
-    OptionalAuthGuard /*BlogService, PostService, BlogRepository, BlogQueryRepository, PostRepository, PostQueryRepository*/,
+    OptionalAuthGuard,
+    CommentExistenceGuard,
+    CommentOwnershipGuard,
   ],
+  exports: [BlogRepository], //Экспортируем чтобы использовать для кастом декоратора
 })
 export class BlogsModule {}

@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 import { PostLikeDto } from '../../modules/posts/api/models/input/post.input.model';
+import { CommentLikeDb } from '../api/models/likes.info.model';
 
 export type CommentLikesDocument = HydratedDocument<CommentLikes>;
 export type PostLikesDocument = HydratedDocument<PostLikes>;
@@ -18,6 +19,13 @@ export class CommentLikes {
 
   @Prop()
   createdAt: string;
+
+  constructor(data: CommentLikeDb) {
+    this.authorId = data.authorId;
+    this.parentId = data.parentId;
+    this.status = data.status;
+    this.createdAt = new Date().toISOString();
+  }
 }
 
 @Schema()
