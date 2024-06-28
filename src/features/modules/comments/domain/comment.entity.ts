@@ -37,6 +37,12 @@ export class Comment {
     } as CommentatorInfo;
     this.createdAt = dto.createdAt || new Date().toISOString();
   }
+
+  updateComment(updatedData: Partial<Comment>) {
+    if (updatedData.content) {
+      this.content = updatedData.content;
+    }
+  }
 }
 
 export const CommentSchema = SchemaFactory.createForClass(Comment);

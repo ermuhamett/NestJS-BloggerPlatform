@@ -12,8 +12,12 @@ export class CommentOwnershipGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext) {
     const request = context.switchToHttp().getRequest();
-    const userId = request.userId;
+    const user = request.user; // Изменено с request.userId на request.user
     const comment = request.comment;
+    if (!user || !comment) {
+      throw new ForbiddenException();
+    }
+    const userId = user.userId; // user.userId вместо userId
     if (comment.commentatorInfo.userId !== userId.toString()) {
       throw new ForbiddenException();
     }

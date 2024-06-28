@@ -41,4 +41,14 @@ export class CommentRepository {
       console.error('Error updating comment like:', error);
     }
   }
+  async deleteCommentById(commentId: string) {
+    try {
+      const result = await this.commentModel.findOneAndDelete({
+        _id: commentId,
+      });
+      return result.$isDeleted();
+    } catch (error) {
+      throw new Error(`Failed to delete blog with error ${error}`);
+    }
+  }
 }

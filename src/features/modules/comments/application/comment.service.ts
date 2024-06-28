@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CommentRepository } from '../infrastructure/comment.repository';
 import { Comment } from '../domain/comment.entity';
 import {
@@ -7,6 +7,7 @@ import {
   LikeStatus,
 } from '../../../likes/api/models/likes.info.model';
 import { CommentLikes } from '../../../likes/domain/like.entity';
+import { CommentCreateDto } from '../api/models/input/comment.input.model';
 
 @Injectable()
 export class CommentService {
@@ -28,7 +29,14 @@ export class CommentService {
     const newComment = new Comment(dto);
     return await this.commentRepository.createComment(newComment);
   }
-
+  async updateCommentById(commentId: string, commentDto: CommentCreateDto) {
+    const existingComment = await this.commentRepository.find(commentId);
+    if (!existingComment) {
+      throw new NotFoundException('Post not found in database');
+    }
+    existingComment.updateComment(commentDto);
+    await existingComment.save();
+  }
   async updateCommentLikeStatus(
     commentId: string,
     userId: string,
@@ -40,5 +48,8 @@ export class CommentService {
       status: payload.likeStatus,
     });
     return await this.commentRepository.updateLikeStatus(dto);
+  }
+  async deleteCommentById(commentId: string) {
+    return await this.commentRepository.deleteCommentById(commentId);
   }
 }
