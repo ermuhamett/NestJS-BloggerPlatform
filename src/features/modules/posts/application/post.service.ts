@@ -19,7 +19,15 @@ export class PostService {
     if (!blog) {
       throw new NotFoundException('Blog not found in database');
     }
-    const post = new Post(postDto, blog.name)
+    const post = new Post(postDto, blog.name);
+    /*const post:Post={
+            title:postDto.title,
+            shortDescription:postDto.shortDescription,
+            content:postDto.content,
+            blogId:postDto.blogId,
+            blogName:blogName,
+            createdAt:new Date().toISOString()
+        }*/
     const newPostId = await this.postRepository.insertPost(post);
     if (!newPostId) {
       return {

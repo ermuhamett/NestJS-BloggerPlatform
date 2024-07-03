@@ -30,7 +30,6 @@ export class CommentLikes {
 
 @Schema()
 export class PostLikes {
-
   @Prop()
   postId: string;
 

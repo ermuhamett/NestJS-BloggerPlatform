@@ -1,13 +1,16 @@
-import {UserDocument} from "../../../domain/user.entity";
-
+import { UserDocument } from '../../../domain/user.entity';
 
 export class UserOutputDto {
-    constructor(
-        readonly id: string,
-        readonly login: string,
-        readonly email: string,
-        readonly createdAt: string,
-    ) {}
+  constructor(
+    readonly id: string,
+    readonly login: string,
+    readonly email: string,
+    readonly createdAt: string,
+  ) {}
+
+  /*id: string;
+    name: string
+    email: string*/
 }
 
 // MAPPERS
