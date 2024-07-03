@@ -8,12 +8,16 @@ export class SecurityRepository {
   constructor(
     @InjectModel(Session.name) private sessionModel: Model<SessionDocument>,
   ) {}
+  async createSession(session: Session) {
+    const result: SessionDocument = await this.sessionModel.create(session);
+    return result.id;
+  }
   async findSession(
     userId: string,
     deviceId: string,
-    expirationDate?: number,
+    createdAt?: number,
   ): Promise<SessionDocument> {
-    return this.sessionModel.findOne({ userId, deviceId, expirationDate });
+    return this.sessionModel.findOne({ userId, deviceId, createdAt });
   }
   async findSessionByDeviceId(deviceId: string): Promise<SessionDocument> {
     return this.sessionModel.findOne({ deviceId });

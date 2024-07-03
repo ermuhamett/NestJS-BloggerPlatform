@@ -20,6 +20,14 @@ export class Session {
 
   @Prop({ required: true })
   expirationDate: number;
+
+  constructor(dto: Partial<Session>) {
+    this.ip = dto.ip;
+    this.deviceId = dto.deviceId;
+    this.deviceName = dto.deviceName;
+    this.createdAt = dto.createdAt;
+    this.expirationDate = dto.expirationDate;
+  }
 }
 
 export const SessionSchema = SchemaFactory.createForClass(Session);

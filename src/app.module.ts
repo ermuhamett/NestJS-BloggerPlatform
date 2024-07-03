@@ -11,6 +11,7 @@ import { IsUniqueConstraint } from './common/decorators/validate/uniqueInDatabas
 import { ThrottlerModule } from '@nestjs/throttler';
 import { CqrsModule } from '@nestjs/cqrs';
 import { BlogExistConstraint } from './common/decorators/validate/blogIdValidate';
+import { SecurityModule } from './features/security/api/security.module';
 
 @Module({
   // Регистрация модулей
@@ -28,21 +29,12 @@ import { BlogExistConstraint } from './common/decorators/validate/blogIdValidate
     TestingModule,
     UserModule,
     AuthModule,
+    SecurityModule,
   ],
   // Регистрация провайдеров
   providers: [
     IsUniqueConstraint,
     BlogExistConstraint,
-    //...usersProviders,
-    /* {
-                provide: UsersService,
-                useClass: UsersService,
-            },*/
-    /*{
-                provide: UsersService,
-                useValue: {method: () => {}},
-    
-            },*/
     // Регистрация с помощью useFactory (необходимы зависимости из ioc, подбор провайдера, ...)
     /* {
                 provide: UsersService,

@@ -5,8 +5,9 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Ip,
   Post,
-  Request,
+  Req,
   Res,
   UnauthorizedException,
   UseGuards,
@@ -30,6 +31,7 @@ import { NewPasswordCommand } from '../application/usecases/new-password-usecase
 import { ConfirmUserCommand } from '../application/usecases/confirm-user-usecase';
 import { RegisterCommand } from '../application/usecases/register-user-usecase';
 import { ResendingEmailCommand } from '../application/usecases/resending-email-usecase';
+import { RefreshTokenGuard } from '../../../common/guards/refresh.token.guard';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -44,10 +46,16 @@ export class AuthController {
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async loginUser(
+    @Req() req,
+    @Ip() reqIp,
     @Body() loginDto: LoginInputDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const tokens = await this.commandBus.execute(new LoginCommand(loginDto)); //await this.authService.loginUser(loginDto);
+    const deviceName = req.headers['user-agent'] ?? 'Your device';
+    const ip = reqIp ?? 'no_ip';
+    const tokens = await this.commandBus.execute(
+      new LoginCommand(loginDto, deviceName, ip),
+    );
     res.cookie('refreshToken', tokens.refreshToken, {
       httpOnly: true,
       secure: true,
@@ -72,10 +80,6 @@ export class AuthController {
         newPasswordDto.recoveryCode,
       ),
     );
-    /*return await this.authService.newUserPassword(
-      newPasswordDto.newPassword,
-      newPasswordDto.recoveryCode,
-    );*/ //done, not tested
   }
 
   @Post('registration-confirmation')
@@ -105,11 +109,21 @@ export class AuthController {
     //return await this.authService.resendingEmail(resendingDto.email);
   }
 
+  @UseGuards(RefreshTokenGuard)
+  @Post('refresh-token')
+  @HttpCode(HttpStatus.OK)
+  async refreshToken(@Req() req) {}
+
+  @UseGuards(RefreshTokenGuard)
+  @Post('logout')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async logout() {}
+
   @SkipThrottle()
   @UseGuards(AuthGuard('jwt'))
   @Get('me')
   @HttpCode(HttpStatus.OK)
-  async currentUser(@Request() req) {
+  async currentUser(@Req() req) {
     const user = await this.userQueryRepository.getUserById(req.user.userId);
     if (!user) {
       throw new UnauthorizedException();

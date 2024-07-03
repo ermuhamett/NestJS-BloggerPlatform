@@ -1,18 +1,34 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { SecurityQueryRepository } from '../infrastructure/security.query.repository';
 import { SecurityRepository } from '../infrastructure/security.repository';
 import { JwtService } from '@nestjs/jwt';
+import { Session } from '../domain/security.entity';
 
 @Injectable()
 export class SecurityService {
-  //private readonly secret;
   constructor(
     private readonly jwtService: JwtService,
     //private readonly configService:ConfigService,
     private readonly securityRepository: SecurityRepository,
-    private readonly securityQueryRepository: SecurityQueryRepository,
   ) {}
 
+  async createAuthSession(
+    refreshToken: string,
+    userId: string,
+    deviceName: string,
+    ip: string,
+  ) {
+    const tokenData = await this.jwtService.decode(refreshToken);
+    const dto: Session = {
+      userId,
+      deviceId: tokenData.deviceId,
+      deviceName,
+      ip,
+      createdAt: tokenData.iat,
+      expirationDate: tokenData.exp,
+    };
+    const newSession = new Session(dto);
+    await this.securityRepository.createSession(newSession);
+  }
   async checkAuthSessionByRefreshToken(refreshToken: string) {
     const tokenData = await this.jwtService.decode(refreshToken);
     /*if(!tokenData){

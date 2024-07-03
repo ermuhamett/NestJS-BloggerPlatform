@@ -32,14 +32,17 @@ export class JwtService {
         const refreshToken = await this.createRefreshToken(userId);
         return { accessToken, refreshToken };
     }*/
-  async createPairToken(userId: string) {
+  async createPairToken(userId: string, deviceId: string) {
     const payload = { sub: userId };
     const accessToken = this.jwtService.sign(payload, {
       expiresIn: this.jwtExpiry, // Срок действия access token
     });
-    const refreshToken = this.jwtService.sign(payload, {
-      expiresIn: this.refreshTokenExpiry, // Срок действия refresh token
-    });
+    const refreshToken = this.jwtService.sign(
+      { payload, deviceId },
+      {
+        expiresIn: this.refreshTokenExpiry, // Срок действия refresh token
+      },
+    );
     return { accessToken, refreshToken };
   }
 
