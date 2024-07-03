@@ -4,7 +4,6 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { Request } from 'express';
 import { SecurityService } from '../../features/security/application/security.service';
 
 //SecurityGuard: Проверяет наличие и валидность токена и добавляет authSession в запрос.

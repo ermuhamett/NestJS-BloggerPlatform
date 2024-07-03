@@ -15,6 +15,9 @@ export class SecurityRepository {
   ): Promise<SessionDocument> {
     return this.sessionModel.findOne({ userId, deviceId, expirationDate });
   }
+  async findSessionByDeviceId(deviceId: string): Promise<SessionDocument> {
+    return this.sessionModel.findOne({ deviceId });
+  }
   async findDeviceIds(userId: string) {
     try {
       // Ищем все сессии пользователя по userId

@@ -1,12 +1,7 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { SecurityQueryRepository } from '../infrastructure/security.query.repository';
 import { SecurityRepository } from '../infrastructure/security.repository';
 import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class SecurityService {
@@ -48,10 +43,16 @@ export class SecurityService {
       if (userDeviceIds.size === 0) {
         return;
       }
-      await this.securityRepository.terminateAllOtherSessions;
+      await this.securityRepository.terminateAllOtherSessions(
+        Array.from(userDeviceIds),
+      );
     } catch (error) {
       console.error('Error deleting other sessions:', error);
       throw new InternalServerErrorException('Error deleting other sessions');
     }
+  }
+
+  async terminateSessionById(deviceId: string) {
+    return this.securityRepository.terminateSessionById(deviceId);
   }
 }
