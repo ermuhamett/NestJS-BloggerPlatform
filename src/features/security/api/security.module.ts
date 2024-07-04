@@ -20,5 +20,6 @@ import { JwtService } from '@nestjs/jwt';
     SecurityQueryRepository,
     SecurityGuard,
   ],
+  exports: [SecurityService, SecurityRepository],
 })
 export class SecurityModule {}

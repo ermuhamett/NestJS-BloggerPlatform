@@ -33,6 +33,7 @@ import { RegisterCommand } from '../application/usecases/register-user-usecase';
 import { ResendingEmailCommand } from '../application/usecases/resending-email-usecase';
 import { RefreshTokenGuard } from '../../../common/guards/refresh.token.guard';
 import { RefreshTokenCommand } from '../application/usecases/refresh-token-usecase';
+import { LogoutCommand } from '../application/usecases/logout-user-usecase';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -124,13 +125,21 @@ export class AuthController {
       httpOnly: true,
       secure: true,
     });
-    return { accessToken: tokens.accessToken }; //done,tested
+    return { accessToken: tokens.accessToken }; //done,not tested
   }
 
   @UseGuards(RefreshTokenGuard)
   @Post('logout')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async logout(@Req() req) {}
+  async logout(@Req() req, @Res({ passthrough: true }) res: Response) {
+    const userId = req.user.id;
+    const deviceId = req.deviceId;
+    await this.commandBus.execute(new LogoutCommand(userId, deviceId));
+    res.clearCookie('refreshToken', {
+      httpOnly: true,
+      secure: true,
+    });
+  } // done not tested
 
   @SkipThrottle()
   @UseGuards(AuthGuard('jwt'))

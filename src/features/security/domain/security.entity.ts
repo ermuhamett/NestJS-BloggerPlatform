@@ -25,6 +25,7 @@ export class Session {
     this.ip = dto.ip;
     this.deviceId = dto.deviceId;
     this.deviceName = dto.deviceName;
+    this.userId = dto.userId; // Добавьте это
     this.createdAt = dto.createdAt;
     this.expirationDate = dto.expirationDate;
   }

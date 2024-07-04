@@ -5,8 +5,9 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { UserRepository } from '../../features/users/infrastructure/user.repository';
-import { JwtService } from '@nestjs/jwt';
+//import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { JwtService } from '../../base/adapters/auth/jwt.service';
 
 @Injectable()
 export class RefreshTokenGuard implements CanActivate {
@@ -21,10 +22,12 @@ export class RefreshTokenGuard implements CanActivate {
   async canActivate(context: ExecutionContext) {
     const request = context.switchToHttp().getRequest();
     const refreshToken = request.cookies.refreshToken;
+    console.log(refreshToken);
     if (!refreshToken) {
       throw new UnauthorizedException('Refresh token is expired');
     }
-    const tokenPayload = await this.jwtService.verify(refreshToken);
+    const tokenPayload = await this.jwtService.verifyToken(refreshToken);
+    console.log(tokenPayload);
     if (!tokenPayload) {
       throw new UnauthorizedException('Not authorized in cookie');
     }

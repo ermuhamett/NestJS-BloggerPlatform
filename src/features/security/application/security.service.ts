@@ -30,6 +30,7 @@ export class SecurityService {
       createdAt: tokenData.iat,
       expirationDate: tokenData.exp,
     };
+    console.log('DTO Session:', dto); // Добавьте логирование
     const newSession = new Session(dto);
     await this.securityRepository.createSession(newSession);
   }
@@ -60,6 +61,14 @@ export class SecurityService {
     }
     session.createdAt = lastActiveData;
     await session.save();
+  }
+
+  async revokeAuthSession(userId: string, deviceId: string) {
+    const session = await this.securityRepository.findSession(userId, deviceId);
+    if (!session) {
+      throw new UnauthorizedException('Session not found');
+    }
+    await session.deleteOne(); // Удаляем сессию
   }
 
   async terminateAllOtherSessions(

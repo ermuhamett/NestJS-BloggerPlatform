@@ -28,8 +28,8 @@ import { SecurityModule } from './features/security/api/security.module';
     BlogsModule,
     TestingModule,
     UserModule,
-    AuthModule,
     SecurityModule,
+    AuthModule,
   ],
   // Регистрация провайдеров
   providers: [

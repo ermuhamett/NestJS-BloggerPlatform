@@ -14,6 +14,10 @@ import { ConfirmUserUseCase } from '../application/usecases/confirm-user-usecase
 import { RegisterUserUseCase } from '../application/usecases/register-user-usecase';
 import { ResendingEmailUseCase } from '../application/usecases/resending-email-usecase';
 import { OptionalAuthGuard } from '../../../common/guards/optional.auth.guard';
+import { RefreshTokenUseCase } from '../application/usecases/refresh-token-usecase';
+import { LogoutUseCase } from '../application/usecases/logout-user-usecase';
+import { RefreshTokenGuard } from '../../../common/guards/refresh.token.guard';
+import { SecurityModule } from '../../security/api/security.module';
 
 const useCases = [
   LoginUserUseCase,
@@ -22,6 +26,8 @@ const useCases = [
   ConfirmUserUseCase,
   RegisterUserUseCase,
   ResendingEmailUseCase,
+  RefreshTokenUseCase,
+  LogoutUseCase,
 ];
 @Module({
   imports: [
@@ -40,6 +46,7 @@ const useCases = [
       },
       inject: [ConfigService],
     }),
+    SecurityModule,
   ],
   providers: [
     JwtStrategy,
@@ -47,6 +54,7 @@ const useCases = [
     JwtService,
     ...useCases,
     OptionalAuthGuard,
+    RefreshTokenGuard,
   ], //А сюда все остальное что через Injectable.Если они внутри module то импортировать только Module
   controllers: [AuthController],
   exports: [JwtModule],

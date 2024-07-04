@@ -17,21 +17,6 @@ export class JwtService {
       'REFRESH_TOKEN_EXPIRY',
     );
   }
-  /*async createJwtToken(userId:string){
-        const payload={userId};
-        const options:JwtSignOptions={expiresIn:this.jwtExpiry};
-        return this.jwtService.signAsync(payload, {secret:this.secretKey, ...options})
-    }
-    async createRefreshToken(userId: string): Promise<string> {//В будущем добавится deviceId для сессии
-        const payload = { userId };
-        const options: JwtSignOptions = { expiresIn: this.refreshTokenExpiry };
-        return this.jwtService.signAsync(payload, { secret: this.secretKey, ...options });
-    }
-    async createPairToken(userId: string): Promise<{ accessToken: string; refreshToken: string }> {//Сюда тоже добавится deviceId для сессии
-        const accessToken = await this.createJwtToken(userId);
-        const refreshToken = await this.createRefreshToken(userId);
-        return { accessToken, refreshToken };
-    }*/
   async createPairToken(userId: string, deviceId: string) {
     const payload = { sub: userId };
     const accessToken = this.jwtService.sign(payload, {
