@@ -1,10 +1,15 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { JwtService } from '@nestjs/jwt';
 import { UserRepository } from '../../../users/infrastructure/user.repository';
 import { SecurityService } from '../../../security/application/security.service';
+import { JwtService } from '../../../../base/adapters/auth/jwt.service';
+import { UnauthorizedException } from '@nestjs/common';
 
 export class RefreshTokenCommand {
-  constructor() {}
+  constructor(
+    //public readonly refreshToken: string,
+    public readonly userId: string,
+    public readonly deviceId: string,
+  ) {}
 }
 
 @CommandHandler(RefreshTokenCommand)
@@ -17,5 +22,23 @@ export class RefreshTokenUseCase
     private readonly securityService: SecurityService,
   ) {}
 
-  async execute(command: RefreshTokenCommand) {}
+  async execute(command: RefreshTokenCommand) {
+    const { userId, deviceId } = command;
+    // Генерируем новую пару токенов
+    const { accessToken, refreshToken } = await this.jwtService.createPairToken(
+      userId,
+      deviceId,
+    );
+    if (!accessToken || !refreshToken) {
+      throw new UnauthorizedException('Token not created');
+    }
+    const newRefreshTokenData = await this.jwtService.decodeToken(refreshToken);
+    const lastActiveData = newRefreshTokenData.iat;
+    await this.securityService.updateAuthSession(
+      userId,
+      deviceId,
+      lastActiveData,
+    );
+    return { accessToken, refreshToken };
+  }
 }

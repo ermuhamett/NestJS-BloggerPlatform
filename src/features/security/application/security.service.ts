@@ -1,4 +1,8 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { SecurityRepository } from '../infrastructure/security.repository';
 import { JwtService } from '@nestjs/jwt';
 import { Session } from '../domain/security.entity';
@@ -43,6 +47,19 @@ export class SecurityService {
             throw new UnauthorizedException('Invalid session');
         }*/
     return authSession;
+  }
+
+  async updateAuthSession(
+    userId: string,
+    deviceId: string,
+    lastActiveData: number,
+  ) {
+    const session = await this.securityRepository.findSession(userId, deviceId);
+    if (!session) {
+      throw new UnauthorizedException('Session not found');
+    }
+    session.createdAt = lastActiveData;
+    await session.save();
   }
 
   async terminateAllOtherSessions(

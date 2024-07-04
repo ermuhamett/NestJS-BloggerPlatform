@@ -32,6 +32,9 @@ export class RefreshTokenGuard implements CanActivate {
     if (!user) {
       throw new UnauthorizedException('Not authorized user not found');
     }
+    // Добавляем userId в Request
+    request.user = { id: tokenPayload.userId };
+    request.deviceId = tokenPayload.deviceId;
     return true;
   }
 }

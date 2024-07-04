@@ -32,6 +32,7 @@ import { ConfirmUserCommand } from '../application/usecases/confirm-user-usecase
 import { RegisterCommand } from '../application/usecases/register-user-usecase';
 import { ResendingEmailCommand } from '../application/usecases/resending-email-usecase';
 import { RefreshTokenGuard } from '../../../common/guards/refresh.token.guard';
+import { RefreshTokenCommand } from '../application/usecases/refresh-token-usecase';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -112,12 +113,24 @@ export class AuthController {
   @UseGuards(RefreshTokenGuard)
   @Post('refresh-token')
   @HttpCode(HttpStatus.OK)
-  async refreshToken(@Req() req) {}
+  async refreshToken(@Req() req, @Res({ passthrough: true }) res: Response) {
+    //const refreshToken = req.cookies.refreshToken;
+    const userId = req.user.id; // Здесь мы получаем userId, который добавил Guard
+    const deviceId = req.deviceId;
+    const tokens = await this.commandBus.execute(
+      new RefreshTokenCommand(userId, deviceId),
+    );
+    res.cookie('refreshToken', tokens.refreshToken, {
+      httpOnly: true,
+      secure: true,
+    });
+    return { accessToken: tokens.accessToken }; //done,tested
+  }
 
   @UseGuards(RefreshTokenGuard)
   @Post('logout')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async logout() {}
+  async logout(@Req() req) {}
 
   @SkipThrottle()
   @UseGuards(AuthGuard('jwt'))
