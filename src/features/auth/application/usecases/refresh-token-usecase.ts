@@ -29,10 +29,13 @@ export class RefreshTokenUseCase
       userId,
       deviceId,
     );
+    console.log('RefreshToken usecase accessToken: ', accessToken);
+    console.log('RefreshToken usecase accessToken: ', refreshToken);
     if (!accessToken || !refreshToken) {
       throw new UnauthorizedException('Token not created');
     }
     const newRefreshTokenData = await this.jwtService.decodeToken(refreshToken);
+    console.log('NewRefreshTokenData:', newRefreshTokenData);
     const lastActiveData = newRefreshTokenData.iat;
     await this.securityService.updateAuthSession(
       userId,

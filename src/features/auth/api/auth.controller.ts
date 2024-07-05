@@ -118,6 +118,8 @@ export class AuthController {
     //const refreshToken = req.cookies.refreshToken;
     const userId = req.user.id; // Здесь мы получаем userId, который добавил Guard
     const deviceId = req.deviceId;
+    //console.log('UserId: ', userId);
+    //console.log('DeviceId: ', deviceId);
     const tokens = await this.commandBus.execute(
       new RefreshTokenCommand(userId, deviceId),
     );

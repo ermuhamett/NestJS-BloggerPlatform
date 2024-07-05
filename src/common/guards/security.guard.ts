@@ -16,6 +16,7 @@ export class SecurityGuard implements CanActivate {
     if (!refreshToken) {
       throw new UnauthorizedException('Not found token in cookie');
     }
+    //console.log('Refresh Token in SecurityGuard:', refreshToken);
     const authSession =
       await this.securityService.checkAuthSessionByRefreshToken(refreshToken);
     if (!authSession) {

@@ -17,7 +17,8 @@ export class SecurityRepository {
     deviceId: string,
     createdAt?: number,
   ): Promise<SessionDocument> {
-    return this.sessionModel.findOne({ userId, deviceId, createdAt });
+    //console.log({ userId, deviceId, createdAt });
+    return this.sessionModel.findOne({ userId, deviceId }); //All done work well
   }
   async findSessionByDeviceId(deviceId: string): Promise<SessionDocument> {
     return this.sessionModel.findOne({ deviceId });

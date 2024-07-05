@@ -32,6 +32,7 @@ export class SecurityService {
     };
     console.log('DTO Session:', dto); // Добавьте логирование
     const newSession = new Session(dto);
+    console.log('Session in db:', newSession);
     await this.securityRepository.createSession(newSession);
   }
   async checkAuthSessionByRefreshToken(refreshToken: string) {
@@ -39,8 +40,9 @@ export class SecurityService {
     /*if(!tokenData){
             throw new UnauthorizedException('Invalid refresh token')
         }*/
+    console.log('TokenData in checkAuthSessionByRefresh: ', tokenData);
     const authSession = await this.securityRepository.findSession(
-      tokenData.userId,
+      tokenData.payload.sub,
       tokenData.deviceId,
       tokenData.iat,
     );
@@ -56,8 +58,9 @@ export class SecurityService {
     lastActiveData: number,
   ) {
     const session = await this.securityRepository.findSession(userId, deviceId);
+    //console.log('Session: ', session);
     if (!session) {
-      throw new UnauthorizedException('Session not found');
+      throw new UnauthorizedException('Session not found'); //Fixed
     }
     session.createdAt = lastActiveData;
     await session.save();
