@@ -11,10 +11,11 @@ export class SecurityOutputDto {
 
 export class SecurityMapper {
   public static toView(session: SessionDocument): SecurityOutputDto {
+    console.log('session.createdAt:', session.createdAt);
     return {
       ip: session.ip,
       title: session.deviceName,
-      lastActiveDate: new Date(session.createdAt).toISOString(),
+      lastActiveDate: new Date(session.createdAt * 1000).toISOString(), // умножаем на 1000, чтобы получить миллисекунды
       deviceId: session.deviceId,
     };
   }

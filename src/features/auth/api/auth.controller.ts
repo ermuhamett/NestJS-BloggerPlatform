@@ -44,7 +44,7 @@ export class AuthController {
     private readonly userQueryRepository: UserQueryRepository,
   ) {}
 
-  @SkipThrottle()
+  //@SkipThrottle()
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async loginUser(
@@ -115,13 +115,15 @@ export class AuthController {
   @Post('refresh-token')
   @HttpCode(HttpStatus.OK)
   async refreshToken(@Req() req, @Res({ passthrough: true }) res: Response) {
-    //const refreshToken = req.cookies.refreshToken;
-    const userId = req.user.id; // Здесь мы получаем userId, который добавил Guard
-    const deviceId = req.deviceId;
+    //const oldRefreshToken = req.cookies.refreshToken;
+    /*const userId = req.user.id; // Здесь мы получаем userId, который добавил Guard
+    const deviceId = req.deviceId;*/
+    console.log('Token data in request: ', req.tokenData);
+    const { userId, deviceId, createdAt } = req.tokenData;
     //console.log('UserId: ', userId);
     //console.log('DeviceId: ', deviceId);
     const tokens = await this.commandBus.execute(
-      new RefreshTokenCommand(userId, deviceId),
+      new RefreshTokenCommand(userId, deviceId, createdAt),
     );
     res.cookie('refreshToken', tokens.refreshToken, {
       httpOnly: true,
@@ -134,9 +136,12 @@ export class AuthController {
   @Post('logout')
   @HttpCode(HttpStatus.NO_CONTENT)
   async logout(@Req() req, @Res({ passthrough: true }) res: Response) {
-    const userId = req.user.id;
-    const deviceId = req.deviceId;
-    await this.commandBus.execute(new LogoutCommand(userId, deviceId));
+    /*const userId = req.user.id;
+    const deviceId = req.deviceId;*/
+    const { userId, deviceId, createdAt } = req.tokenData;
+    await this.commandBus.execute(
+      new LogoutCommand(userId, deviceId, createdAt),
+    );
     res.clearCookie('refreshToken', {
       httpOnly: true,
       secure: true,

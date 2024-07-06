@@ -12,13 +12,14 @@ export class SecurityRepository {
     const result: SessionDocument = await this.sessionModel.create(session);
     return result.id;
   }
+
   async findSession(
     userId: string,
     deviceId: string,
     createdAt?: number,
   ): Promise<SessionDocument> {
     //console.log({ userId, deviceId, createdAt });
-    return this.sessionModel.findOne({ userId, deviceId }); //All done work well
+    return this.sessionModel.findOne({ userId, deviceId, createdAt }); //All done work well
   }
   async findSessionByDeviceId(deviceId: string): Promise<SessionDocument> {
     return this.sessionModel.findOne({ deviceId });
@@ -61,5 +62,8 @@ export class SecurityRepository {
       console.error('Error deleting other sessions:', error);
       throw new InternalServerErrorException('Error deleting other sessions');
     }
+  }
+  async deleteAuthSession(userId: string, deviceId: string, createdAt: number) {
+    await this.sessionModel.findOneAndDelete({ userId, deviceId, createdAt });
   }
 }

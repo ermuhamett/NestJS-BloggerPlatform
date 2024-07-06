@@ -22,6 +22,7 @@ export class SecurityGuard implements CanActivate {
     if (!authSession) {
       throw new UnauthorizedException('Auth Session not exist by this token');
     }
+    console.log('Auth session: ', authSession);
     request.authSession = authSession;
     return true;
   }

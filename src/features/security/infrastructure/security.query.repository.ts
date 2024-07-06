@@ -11,10 +11,11 @@ export class SecurityQueryRepository {
   ) {}
 
   async getDevices(userId: string) {
-    const authSession = await this.sessionModel.findOne({ userId: userId });
-    if (!authSession) {
+    const authSessions = await this.sessionModel.find({ userId });
+    console.log('Auth session in getDevices: ', authSessions);
+    if (!authSessions) {
       throw new NotFoundException('Session not found');
     }
-    return SecurityMapper.toView(authSession);
+    return authSessions.map(SecurityMapper.toView);
   }
 }

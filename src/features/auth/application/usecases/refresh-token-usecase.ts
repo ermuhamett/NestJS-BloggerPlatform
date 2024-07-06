@@ -6,9 +6,10 @@ import { UnauthorizedException } from '@nestjs/common';
 
 export class RefreshTokenCommand {
   constructor(
-    //public readonly refreshToken: string,
+    //public readonly oldRefreshToken: string, //Добавляем старый токен
     public readonly userId: string,
     public readonly deviceId: string,
+    public readonly oldTokenIat: number,
   ) {}
 }
 
@@ -18,12 +19,12 @@ export class RefreshTokenUseCase
 {
   constructor(
     private readonly jwtService: JwtService,
-    private readonly userRepository: UserRepository,
+    //private readonly userRepository: UserRepository,
     private readonly securityService: SecurityService,
   ) {}
 
   async execute(command: RefreshTokenCommand) {
-    const { userId, deviceId } = command;
+    const { userId, deviceId, oldTokenIat } = command;
     // Генерируем новую пару токенов
     const { accessToken, refreshToken } = await this.jwtService.createPairToken(
       userId,
@@ -34,6 +35,7 @@ export class RefreshTokenUseCase
     if (!accessToken || !refreshToken) {
       throw new UnauthorizedException('Token not created');
     }
+    //await this.securityService.revokeAuthSession(userId, deviceId, createdAt);
     const newRefreshTokenData = await this.jwtService.decodeToken(refreshToken);
     console.log('NewRefreshTokenData:', newRefreshTokenData);
     const lastActiveData = newRefreshTokenData.iat;
@@ -41,6 +43,7 @@ export class RefreshTokenUseCase
       userId,
       deviceId,
       lastActiveData,
+      oldTokenIat,
     );
     return { accessToken, refreshToken };
   }

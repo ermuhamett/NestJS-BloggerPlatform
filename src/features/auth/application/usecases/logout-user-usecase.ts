@@ -5,6 +5,7 @@ export class LogoutCommand {
   constructor(
     public readonly userId: string,
     public readonly deviceId: string,
+    public readonly createdAt: number,
   ) {}
 }
 
@@ -13,7 +14,7 @@ export class LogoutUseCase implements ICommandHandler<LogoutCommand> {
   constructor(private readonly securityService: SecurityService) {}
 
   async execute(command: LogoutCommand) {
-    const { userId, deviceId } = command;
-    await this.securityService.revokeAuthSession(userId, deviceId);
+    const { userId, deviceId, createdAt } = command;
+    await this.securityService.revokeAuthSession(userId, deviceId, createdAt);
   }
 }

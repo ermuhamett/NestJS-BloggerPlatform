@@ -56,18 +56,28 @@ export class SecurityService {
     userId: string,
     deviceId: string,
     lastActiveData: number,
+    oldTokenIat: number, //Используем время создания старого токена чтобы найти точную сессию
   ) {
-    const session = await this.securityRepository.findSession(userId, deviceId);
-    //console.log('Session: ', session);
+    const session = await this.securityRepository.findSession(
+      userId,
+      deviceId,
+      oldTokenIat,
+    );
+    console.log('Session in updateAuthSession method: ', session);
     if (!session) {
       throw new UnauthorizedException('Session not found'); //Fixed
     }
     session.createdAt = lastActiveData;
+    console.log('Updated session: ', session);
     await session.save();
   }
 
-  async revokeAuthSession(userId: string, deviceId: string) {
-    const session = await this.securityRepository.findSession(userId, deviceId);
+  async revokeAuthSession(userId: string, deviceId: string, createdAt: number) {
+    const session = await this.securityRepository.findSession(
+      userId,
+      deviceId,
+      createdAt,
+    );
     if (!session) {
       throw new UnauthorizedException('Session not found');
     }

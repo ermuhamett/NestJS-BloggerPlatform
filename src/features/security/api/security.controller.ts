@@ -37,9 +37,9 @@ export class SecurityController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async terminateAllSessions(@Req() req) {
     const refreshToken = req.cookies.refreshToken;
-    const authSession = req.authSession;
+    const currentDeviceId = req.authSession.deviceId;
     await this.securityService.terminateAllOtherSessions(
-      authSession.deviceId,
+      currentDeviceId,
       refreshToken,
     );
   }
