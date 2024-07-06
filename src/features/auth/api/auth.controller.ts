@@ -44,7 +44,6 @@ export class AuthController {
     private readonly userQueryRepository: UserQueryRepository,
   ) {}
 
-  //@SkipThrottle()
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async loginUser(
@@ -70,7 +69,7 @@ export class AuthController {
   async passwordRecovery(@Body() passwordRecoveryDto: PasswordRecoveryDto) {
     return await this.commandBus.execute(
       new PasswordRecoveryCommand(passwordRecoveryDto.email),
-    ); //await this.authService.passwordRecovery(passwordRecoveryDto.email); //done, not tested
+    );
   }
 
   @Post('new-password')

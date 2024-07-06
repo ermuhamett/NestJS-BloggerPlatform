@@ -42,10 +42,12 @@ export class SecurityRepository {
       throw new InternalServerErrorException('Error getting device ids');
     }
   }
-  async terminateAllOtherSessions(userDevicesIds: string[]) {
+  async terminateAllOtherSessions(userId: string, currentDeviceId: string) {
     try {
+      // Удаляем все сессии пользователя, кроме текущей
       const result = await this.sessionModel.deleteMany({
-        deviceId: { $in: userDevicesIds },
+        userId,
+        deviceId: { $ne: currentDeviceId },
       });
       return result.deletedCount;
     } catch (error) {

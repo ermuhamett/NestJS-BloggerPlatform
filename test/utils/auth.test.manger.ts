@@ -9,14 +9,14 @@ export class AuthTestManger {
 
   async createUser(inputModelDto: UserCreateDto) {
     return request(this.app.getHttpServer())
-      .post('/auth/registration')
+      .post('/api/auth/registration')
       .send(inputModelDto)
       .expect(HttpStatus.NO_CONTENT);
   }
 
   async login(dto: LoginInputDto) {
     const response = await request(this.app.getHttpServer())
-      .post('auth/login')
+      .post('/api/auth/login')
       .send(dto)
       .expect(HttpStatus.OK);
     return {

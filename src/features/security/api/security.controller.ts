@@ -36,11 +36,12 @@ export class SecurityController {
   @Delete('devices')
   @HttpCode(HttpStatus.NO_CONTENT)
   async terminateAllSessions(@Req() req) {
-    const refreshToken = req.cookies.refreshToken;
+    //const refreshToken = req.cookies.refreshToken;
+    const userId = req.authSession.userId;
     const currentDeviceId = req.authSession.deviceId;
     await this.securityService.terminateAllOtherSessions(
       currentDeviceId,
-      refreshToken,
+      userId,
     );
   }
 

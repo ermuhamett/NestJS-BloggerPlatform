@@ -39,8 +39,6 @@ export class UserRepository {
     }
   }
 
-  //async updateConfirmation(){}
-
   async deleteUserById(userId: string) {
     try {
       const result = await this.userModel.findOneAndDelete({ _id: userId });

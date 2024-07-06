@@ -84,22 +84,12 @@ export class SecurityService {
     await session.deleteOne(); // Удаляем сессию
   }
 
-  async terminateAllOtherSessions(
-    currentDeviceId: string,
-    refreshToken: string,
-  ) {
-    const tokenData = await this.jwtService.decode(refreshToken);
+  async terminateAllOtherSessions(currentDeviceId: string, userId: string) {
+    //const tokenData = await this.jwtService.decode(refreshToken);
     try {
-      // Получаем идентификаторы устройств пользователя
-      const userDeviceIds = await this.securityRepository.findDeviceIds(
-        tokenData.userId,
-      );
-      userDeviceIds.delete(currentDeviceId);
-      if (userDeviceIds.size === 0) {
-        return;
-      }
       await this.securityRepository.terminateAllOtherSessions(
-        Array.from(userDeviceIds),
+        userId,
+        currentDeviceId,
       );
     } catch (error) {
       console.error('Error deleting other sessions:', error);
