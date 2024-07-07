@@ -16,7 +16,7 @@ jobs:
         ports:
           - 27017:27017
         options: >-
-          --health-cmd="echo 'db.runCommand({ ping: 1 })' | mongo localhost:27017/test --quiet"
+          --health-cmd="echo 'db.runCommand({ ping: 1 })' | mongo --quiet"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
@@ -24,10 +24,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-
-      - name: Increase vm.max_map_count
-        run: sudo sysctl -w vm.max_map_count=262144
-
+        
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
@@ -38,8 +35,9 @@ jobs:
 
       - name: Wait for MongoDB to be ready
         run: |
-          while ! docker exec mongo mongo --quiet --eval "db.runCommand({ ping: 1 })" &>/dev/null; do
-            echo "Waiting for MongoDB to be ready..."
+          echo "Waiting for MongoDB to be ready..."
+          until mongo --host localhost --port 27017 --eval "print('ready')" &>/dev/null; do
+            echo "MongoDB is not ready yet..."
             sleep 2
           done
         shell: bash
