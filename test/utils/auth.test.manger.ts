@@ -7,7 +7,7 @@ export class AuthTestManger {
   constructor(protected readonly app: INestApplication) {}
   // можно выносить некоторые проверки в отдельные методы для лучшей читаемости тестов
 
-  async createUser(inputModelDto: UserCreateDto) {
+  async registerUser(inputModelDto: UserCreateDto) {
     return request(this.app.getHttpServer())
       .post('/api/auth/registration')
       .send(inputModelDto)

@@ -52,7 +52,7 @@ describe('Auth Service test', () => {
         password: '123456',
         email: 'fixit_montrey@gmail.com',
       };
-      await authTestManager.createUser(user);
+      await authTestManager.registerUser(user);
     });
     it('should login register user', async () => {
       const loginUser: LoginInputDto = {
