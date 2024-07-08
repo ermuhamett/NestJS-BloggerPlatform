@@ -38,7 +38,7 @@ jobs:
         run: |
           echo "Checking if MongoDB is ready..."
           sleep 15  # Задержка перед проверкой
-          if mongo --host localhost --port 27017 --eval "print('MongoDB is ready')" &>/dev/null; then
+          if mongo --host 127.0.0.1 --port 27017 --eval "print('MongoDB is ready')" &>/dev/null; then
             echo "MongoDB is ready"
           else
             echo "MongoDB is not ready yet"
