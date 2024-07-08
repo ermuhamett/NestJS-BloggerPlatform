@@ -5,7 +5,13 @@ on:
   pull_request:
     branches:
       - main
-
+env:
+      MONGODB_URI: ${{ secrets.MONGO_CONNECTION_URI }}
+      JWT_ACCESS_TOKEN_SECRET: ${{ secrets.JWT_ACCESS_TOKEN_SECRET }}
+      JWT_EXPIRY: ${{ secrets.JWT_EXPIRY }}
+      REFRESH_TOKEN_EXPIRY: ${{ secrets.REFRESH_TOKEN_EXPIRY }}
+      SMTP_USER: ${{ secrets.SMTP_USER }}
+      SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -41,11 +47,4 @@ jobs:
         shell: bash
 
       - name: Run tests
-        env:
-          MONGODB_URI: ${{ secrets.MONGO_CONNECTION_URI }}
-          JWT_ACCESS_TOKEN_SECRET: ${{ secrets.JWT_ACCESS_TOKEN_SECRET }}
-          JWT_EXPIRY: ${{ secrets.JWT_EXPIRY }}
-          REFRESH_TOKEN_EXPIRY: ${{ secrets.REFRESH_TOKEN_EXPIRY }}
-          SMTP_USER: ${{ secrets.SMTP_USER }}
-          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
         run: npm test
