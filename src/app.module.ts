@@ -17,7 +17,7 @@ import { SecurityModule } from './features/security/api/security.module';
   // Регистрация модулей
   imports: [
     CqrsModule.forRoot(),
-    MongooseModule.forRoot(appSettings.api.MONGO_CONNECTION_URI),
+    MongooseModule.forRoot(appSettings.api.MONGO_CONNECTION_URI ?? 'mongodb://localhost/nest'),
     ConfigModule.forRoot({ isGlobal: true }),
     ThrottlerModule.forRoot([
       {
