@@ -34,17 +34,6 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Wait for MongoDB to be ready
-        run: |
-          echo "Checking if MongoDB is ready..."
-          sleep 15  # Задержка перед проверкой
-          if mongo --host 127.0.0.1 --port 27017 --eval "print('MongoDB is ready')" &>/dev/null; then
-            echo "MongoDB is ready"
-          else
-            echo "MongoDB is not ready yet"
-            exit 1
-          fi
-        shell: bash
 
       - name: Run tests
         run: npm test
