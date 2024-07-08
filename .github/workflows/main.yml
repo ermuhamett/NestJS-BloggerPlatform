@@ -30,16 +30,18 @@ jobs:
 
       - name: Wait for MongoDB to be ready
         run: |
-          echo "Waiting for MongoDB to be ready..."
-          until mongo --host localhost --port 27017 --eval "print(\"MongoDB is ready\")" &>/dev/null; do
-            echo "MongoDB is not ready yet..."
-            sleep 2
-          done
+          echo "Checking if MongoDB is ready..."
+          if mongo --host localhost --port 27017 --eval "print('MongoDB is ready')" &>/dev/null; then
+            echo "MongoDB is ready"
+          else
+            echo "MongoDB is not ready yet"
+            exit 1
+          fi
         shell: bash
 
       - name: Run tests
         env:
-          MONGODB_URI: mongodb://localhost:27017/test
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
           JWT_ACCESS_TOKEN_SECRET: ${{ secrets.JWT_ACCESS_TOKEN_SECRET }}
           JWT_EXPIRY: ${{ secrets.JWT_EXPIRY }}
           REFRESH_TOKEN_EXPIRY: ${{ secrets.REFRESH_TOKEN_EXPIRY }}
